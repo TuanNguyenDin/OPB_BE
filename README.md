@@ -28,6 +28,57 @@ The NestJS BE project for an online party booking system.
 
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
+## Instructions for installing MongoDB
+
+Here are instructions for installing MongoDB on popular operating systems such as Windows, macOS, and Linux.
+
+### Windows
+
+1. Visit MongoDB official website [here](https://www.mongodb.com/try/download/community) and download the version suitable for your Windows operating system.
+
+2. Run the downloaded installation file and follow the installation steps in the MongoDB installer.
+
+3. MongoDB will be installed and ready to use.
+
+### macOS
+
+1. Using Homebrew, open Terminal and run the following command:
+    ```bash
+    brew tap mongodb/brew
+    brew install mongodb-community
+    ```
+
+2. Run MongoDB using the command:
+    ```bash
+    mongod --config /usr/local/etc/mongod.conf --fork
+    ```
+
+3. MongoDB will be installed and ready to use.
+
+### Linux (Ubuntu)
+
+1. Open Terminal and run the following commands:
+    ```bash
+    sudo apt update
+    sudo apt install -y mongodb
+    ```
+
+2. Start MongoDB:
+    ```bash
+    sudo systemctl start mongodb
+    ```
+
+3. MongoDB will be installed and ready to use.
+
+### Check settings
+
+1. Open Terminal or Command Prompt and run the following command to check MongoDB version:
+    ```bash
+    mongo --version
+    ```
+
+2. You will see the current MongoDB version.  
+
 ## Installation
 
 ```bash
