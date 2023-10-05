@@ -85,6 +85,14 @@ Here are instructions for installing MongoDB on popular operating systems such a
 $ npm install
 ```
 
+##  Set up environment variables
+
+Create .env file and add appropriate variables in order to use the app.
+DATA_BASE=<your database url here>
+exemple: DATA_BASE=mongodb://127.0.0.1:27017/
+JWT_SECRET=<set up your secret key>
+EXPIRES_IN_SECONDS= <jwt uptime>
+
 ## Running the app
 
 ```bash
@@ -114,12 +122,6 @@ $ npm run test:cov
 ## Support
 
 Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
 
 ## License
 
