@@ -87,8 +87,8 @@ $ npm install
 
 ##  Set up environment variables
 
-```bash
 Create .env file and add appropriate variables in order to use the app.
+```bash
 DATA_BASE=<your database url here>
 JWT_SECRET=<set up your secret key>
 EXPIRES_IN_SECONDS= <jwt uptime>
