@@ -28,7 +28,7 @@ The NestJS BE project for an online party booking system.
 
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
-## Instructions for installing MongoDB
+## Installing MongoDB
 
 Here are instructions for installing MongoDB on popular operating systems such as Windows, macOS, and Linux.
 
