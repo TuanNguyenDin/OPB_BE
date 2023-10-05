@@ -87,11 +87,12 @@ $ npm install
 
 ##  Set up environment variables
 
+```bash
 Create .env file and add appropriate variables in order to use the app.
 DATA_BASE=<your database url here>
-exemple: DATA_BASE=mongodb://127.0.0.1:27017/
 JWT_SECRET=<set up your secret key>
 EXPIRES_IN_SECONDS= <jwt uptime>
+```
 
 ## Running the app
 
