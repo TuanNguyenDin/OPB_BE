@@ -12,6 +12,6 @@
     "env": {
         "MONGO_URL":"mongodb+srv://SE151153:SE151153@cluster0.eub0e5r.mongodb.net/OnlinePartybooking",
         "JWT_SECRET":"OnlinePartybooking",
-        "EXPIRES_IN_SECONDS":10800s
+        "EXPIRES_IN_SECONDS":10800
     }
   }
