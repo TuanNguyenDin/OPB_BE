@@ -13,6 +13,8 @@ export class User {
     password: string;
     @Prop({default: false})
     isAdmin: boolean;
+
+    timestamps: true;
 }
 
 export type UserDocument = HydratedDocument<User>;

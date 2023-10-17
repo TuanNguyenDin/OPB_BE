@@ -1,8 +1,10 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { Bucket, Storage } from '@google-cloud/storage';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
-import { auth } from '../firebaseConfig'
+import { auth, firebaseConfig } from '../firebaseConfig'
 import { createUserWithEmailAndPassword, sendEmailVerification, signInWithEmailAndPassword } from 'firebase/auth';
 import { JwtService } from '@nestjs/jwt';
 import { User } from './entities/user.entities';
@@ -12,10 +14,11 @@ export class AuthService {
     constructor(@InjectModel('User') private userModel: Model<User>, private jwtService: JwtService) { }
     async register(userData) {
         try {
-            if (userData.password.length < 6) { throw new Error("Password should be at least 6 characters") }
-            const hashpassword = await bcrypt.hash(userData.password, 12);
-            const userCredential = await createUserWithEmailAndPassword(auth, userData.email, userData.password);
-            // await sendEmailVerification(auth.currentUser);
+            if (userData.password.length < 6) { throw new Error("Password should be at least 6 characters") }// kiểm tra độ dài của password trả về lỗi nếu nhỏ hơn 6 kí tự
+            const hashpassword = await bcrypt.hash(userData.password, 12);//mã hóa password để lưu vào database
+            const userCredential = await createUserWithEmailAndPassword(auth, userData.email, userData.password);//lưu tài khoản và password vào firebase
+            // await sendEmailVerification(auth.currentUser);//hàm gọi chức năng gửi mail xác nhận đăng kí của user
+            // lưu thông tin người dùng vào database
             const user = await new this.userModel({
                 name: userData.name,
                 email: userData.email,
@@ -25,45 +28,48 @@ export class AuthService {
             }).save();
             return user;
         } catch (err) {
+            //lỗi được firebase trả về 
             switch (err.code) {
                 case "auth/email-already-in-use":
-                    throw new Error("Email already in use");
+                    throw new HttpException("Email already in use", HttpStatus.INTERNAL_SERVER_ERROR);//người dùng đã tồn tại
                 case "auth/invalid-email":
-                    throw new Error("Invalid email");
+                    throw new HttpException("Invalid email", HttpStatus.INTERNAL_SERVER_ERROR);//email sai định dạng
                 case "auth/weak-password":
-                    throw new Error("Password should be at least 6 characters");
+                    throw new HttpException("Password should be at least 6 characters", HttpStatus.INTERNAL_SERVER_ERROR);// mật khẩu yếu
                 case "auth/operation-not-allowed":
-                    throw new Error("Operation not allowed, please contact support");
+                    throw new HttpException("Operation not allowed, please contact support", HttpStatus.INTERNAL_SERVER_ERROR);//server firebase lỗi
                 case "auth/too-many-requests":
-                    throw new Error("Too many requests, please try again later.");
+                    throw new HttpException("Too many requests, please try again later.", HttpStatus.INTERNAL_SERVER_ERROR);//quá nhiều request
             }
         }
     }
     async login(userData) {
         try {
-            const userCredential = await signInWithEmailAndPassword(auth, userData.email, userData.password);
-            const user = await this.userModel.findOne({ name: userData.name } || { email: userData.email }).exec();
+            const userCredential = await signInWithEmailAndPassword(auth, userData.email, userData.password);//xác thực đăng nhập người dùng với firebase
+            const user = await this.userModel.findOne({ name: userData.name } || { email: userData.email }).exec();//xác thực đăng nhập người dùng với database
             if (!user) {
-                throw new Error("User not found");
+                throw new HttpException("User not found", HttpStatus.INTERNAL_SERVER_ERROR);
             }
-            const jwt = await this.jwtService.signAsync({ id: user._id }, { secret: process.env.JWT_SECRET, expiresIn: process.env.EXPIRES_IN_SECONDS });
+            const jwt = await this.jwtService.signAsync({ id: user._id }, { secret: process.env.JWT_SECRET, expiresIn: process.env.EXPIRES_IN_SECONDS });// tạo jwt token
             return {
                 user,
                 jwt
             }
         } catch (err) {
+            //lỗi được firebase trả về
             switch (err.code) {
-                case "auth/wrong-password":
-                    throw new Error("Invalid password");
+                case "auth/invalid-login-credentials":
+                    throw new HttpException("Invalid password", HttpStatus.INTERNAL_SERVER_ERROR);//sai password
                 case "auth/user-not-found":
-                    throw new Error("User not found");
+                    throw new HttpException("User not found", HttpStatus.INTERNAL_SERVER_ERROR);//không tìm thấy người dùng
                 case "auth/too-many-requests":
-                    throw new Error("Too many requests, please try again later.");
+                    throw new HttpException("Too many requests, please try again later.", HttpStatus.INTERNAL_SERVER_ERROR);
                 default:
                     throw err;
             }
         }
     }
+    //tạo lại và cung cấp token mới cho người dùng(chưa có router)
     async refreshToken(user) {
         const jwt = await this.jwtService.signAsync({ id: user._id });
         return {
@@ -71,5 +77,110 @@ export class AuthService {
             jwt
         }
     }
+}
+
+@Injectable()
+export class FirebaseService {
+  private storage: Storage;
+  private bucket: Bucket;
+
+  constructor(private readonly config: ConfigService) {
+    this.storage = new Storage({
+      projectId: this.config.get(firebaseConfig.projectId),
+      credentials: {
+        client_email: firebaseConfig.client_email,
+        client_id: firebaseConfig.client_id,
+        private_key: firebaseConfig.private_key
+      },
+    });
+    this.bucket = this.storage.bucket(firebaseConfig.storageBucket);
+  }
+
+  async uploadFile(folder: string, file: Express.Multer.File) {
+    
+    try {
+      const key = `${folder}/${file.originalname}`;
+
+      const fileUpload = this.bucket.file(key);
+
+      const blobStream = fileUpload.createWriteStream({
+        metadata: {
+          contentType: file.mimetype,
+        },
+      });
+      // console.log('this run');
+      blobStream.on('error', error => {
+        console.log(error);
+        throw new Error('images was not saved to firebase');
+      });
+
+      // Resolve the public URL after the upload is finished
+      return new Promise<string>((resolve, reject) => {
+        blobStream.on('finish', async () => {
+          const file = this.bucket.file(key);
+
+          const neverExpireDate = new Date('9999-12-31T23:59:59.999Z');
+
+          const publicUrl = await file.getSignedUrl({
+            action: 'read',
+            expires: neverExpireDate,
+          });
+
+          resolve(publicUrl[0]); // The getSignedUrl() returns an array, so we return the first URL
+        });
+
+        // Reject the promise on any stream errors
+        blobStream.on('error', reject);
+
+        blobStream.end(file.buffer);
+      });
+    } catch (error) {
+      throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  async getImage(folder: string, fileName: string): Promise<string> {
+    const key = `${folder}/${fileName}`;
+
+    const file = this.bucket.file(key);
+
+    try {
+      const neverExpireDate = new Date('9999-12-31T23:59:59.999Z');
+
+      const publicUrl = await file.getSignedUrl({
+        action: 'read',
+        expires: neverExpireDate,
+      });
+
+      return publicUrl[0];
+    } catch (error) {
+      console.log(error);
+    throw new HttpException('Failed to get the image from Firebase', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  async uploadMultiImage(files: Array<Express.Multer.File>, id: string) {
+    const uploadedUrls = [];
+
+    for (const file of files) {
+      try {
+        const url = await this.uploadFile(id, file);
+        uploadedUrls.push(url);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    return uploadedUrls;
+  }
+
+  async deleteImage(folder: string, fileName: string) {
+    const filePath = `${folder}/${fileName}`;
+    const file = this.bucket.file(filePath);
+
+    await file.delete();
+
+    console.log(`File ${filePath} deleted successfully.`);
+  }
 }
 

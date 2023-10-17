@@ -1,26 +1,51 @@
-import { Injectable } from '@nestjs/common';
-import { CreateManagerDto } from './dto/create-manager.dto';
-import { UpdateManagerDto } from './dto/update-manager.dto';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import * as bcrypt from 'bcrypt';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { Manager } from './entities/manager.entity';
+import { updateCurrentUser } from 'firebase/auth';
+import { auth } from 'src/firebaseConfig';
 
 @Injectable()
 export class ManagerService {
-  create(createManagerDto: CreateManagerDto) {
-    return 'This action adds a new manager';
+  constructor(@InjectModel('Manager') private managerRepository: Model<Manager>) { }
+  async create(userdata) {
+    const newManager = {
+      ...userdata,
+      dateStart: new Date(),
+      position: 'manager'
+    }
+    return await new this.managerRepository(newManager).save();
   }
 
-  findAll() {
-    return `This action returns all manager`;
+  async findAll() {
+    return await this.managerRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} manager`;
+  async findOne(id: number) {
+    return await this.managerRepository.findById(id);
   }
 
-  update(id: number, updateManagerDto: UpdateManagerDto) {
-    return `This action updates a #${id} manager`;
+  async update(id, updateManagerDto) {
+    try {
+
+      return await this.managerRepository.findByIdAndUpdate(id, updateManagerDto);
+    } catch (err) {
+      switch (err.code) {
+        case 'auth/invalid-email':
+          throw new HttpException('Invalid email', HttpStatus.BAD_REQUEST);
+        case 'auth/user-disabled':
+          throw new HttpException('User disabled', HttpStatus.BAD_REQUEST);
+      }
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} manager`;
+  async remove(id: number) {
+    const manager = this.managerRepository.findById(id);
+    return await this.managerRepository.findByIdAndUpdate(id, {
+      ...manager,
+      dateEnd: new Date(),
+      status: 'deleted'
+    });
   }
 }

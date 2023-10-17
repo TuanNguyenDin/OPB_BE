@@ -1,9 +1,10 @@
 import { Module } from '@nestjs/common';
-import { AuthService } from './auth.service';
+import { AuthService, FirebaseService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { JwtModule } from '@nestjs/jwt';
 import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserSchema } from './entities/user.entities';
+import { ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -15,6 +16,6 @@ import { User, UserSchema } from './entities/user.entities';
     }
   })],
   controllers: [AuthController],
-  providers: [AuthService],
+  providers: [AuthService, FirebaseService,ConfigService],
 })
 export class AuthModule { }

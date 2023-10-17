@@ -18,6 +18,8 @@ export class Manager implements User {
     password: string;
     @Prop({default: false})
     isAdmin: boolean;
+
+    timestamps: true;
 }
 
 export type managerDocument = HydratedDocument<Manager>;

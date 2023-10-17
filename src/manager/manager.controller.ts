@@ -1,15 +1,19 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { ManagerService } from './manager.service';
 import { CreateManagerDto } from './dto/create-manager.dto';
 import { UpdateManagerDto } from './dto/update-manager.dto';
+import { AuthGuard } from 'src/auth/auth.guard';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('manager')
+@ApiTags('Manager')
 export class ManagerController {
   constructor(private readonly managerService: ManagerService) {}
 
   @Post()
-  create(@Body() createManagerDto: CreateManagerDto) {
-    return this.managerService.create(createManagerDto);
+  @UseGuards(AuthGuard)
+  create(@Body() userdata) {
+    return this.managerService.create(userdata);
   }
 
   @Get()
@@ -22,12 +26,14 @@ export class ManagerController {
     return this.managerService.findOne(+id);
   }
 
-  @Patch(':id')
+  @Post(':id')
+  @UseGuards(AuthGuard)
   update(@Param('id') id: string, @Body() updateManagerDto: UpdateManagerDto) {
-    return this.managerService.update(+id, updateManagerDto);
+    return this.managerService.update(id, updateManagerDto);
   }
 
   @Delete(':id')
+  @UseGuards(AuthGuard)
   remove(@Param('id') id: string) {
     return this.managerService.remove(+id);
   }
