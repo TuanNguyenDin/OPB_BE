@@ -3,12 +3,12 @@ import { AuthService, FirebaseService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { JwtModule } from '@nestjs/jwt';
 import { MongooseModule } from '@nestjs/mongoose';
-import { User, UserSchema } from './entities/user.entities';
+import { Account, AccountSchema } from './entities/user.entities';
 import { ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{name:User.name, schema:UserSchema}])
+    MongooseModule.forFeature([{name:Account.name, schema:AccountSchema}])
     ,JwtModule.register({
     secret: process.env.JWT_SECRET,
     signOptions: {

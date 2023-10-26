@@ -1,26 +1,18 @@
 import { ApiProperty } from "@nestjs/swagger";
 
-export class CreateUserDto {
-    @ApiProperty({
-        example: 'John',
-        description: 'Name of the user'
-    })
-    name: string;
-    @ApiProperty({
-        example: '0909090909',
-        description: 'Phone number of the user'
-    })
-    phone: string;
-    @ApiProperty({
-        example: '<EMAIL>',
-        description: 'Email of the user'
-    })
+export class CreateAccountDto {
+    @ApiProperty({example: 'John@gmail.com', description: 'email of the user'})
     email: string;
-    @ApiProperty({
-        example: '<PASSWORD>',
-        description: 'Password of the user'
-    })
+    @ApiProperty({example: 'manager', description: 'role of the user'})  
+    role: string;
+    @ApiProperty({example:'verified', description:'status of the user'})
+    status: string;
+    @ApiProperty({example:'1234567890', description: 'phone number of the user'})
+    phone_number: string;
+    @ApiProperty({example:'John', description: 'full name of the user'})
+    full_name: string;
+    @ApiProperty({example:'https://www.google.com/image.jpg', description: 'avatar of the user'})
+    avatar: string;
+    @ApiProperty({example:'<PASSWORD>', description: 'password of the user'})
     password: string;
-    @ApiProperty({default: false})
-    isAdmin: boolean;
 }

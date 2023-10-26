@@ -1,11 +1,11 @@
 import { Body, Controller, Param, Post, UploadedFile, UploadedFiles, UseInterceptors } from '@nestjs/common';
 import { AuthService, FirebaseService } from './auth.service';
 import { ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
-import { CreateUserDto } from './dto/create-user.dto';
+import { CreateAccountDto } from './dto/create-user.dto';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 
-@Controller('auth')
-@ApiTags('Auth')
+@Controller('common')
+@ApiTags('Common')
 export class AuthController {
     //Controller quy định các router nào sẽ sử dụng chức năng nào nằm trong service, cũng như là dữ liệu nào được truyền vào và sử dụng
     constructor(
@@ -14,16 +14,18 @@ export class AuthController {
     ) { }
     @Post('signup')
     async signUp(
-        @Body() { name, email, phone, password }: CreateUserDto
+        @Body() { email, password }: CreateAccountDto
     ) {
-        return await this.authService.register({ name: name, email: email, phone: phone, password: password })
+        return await this.authService.register({ email: email, password: password })
     }
     @Post('signin')
     async signIn(
-        @Body() data: CreateUserDto
+        @Body() data: CreateAccountDto
     ) {
         return await this.authService.login(data);
     }
+
+
     @Post('single/:folder')
     @UseInterceptors(FileInterceptor('file'))
     @ApiBody({
@@ -48,12 +50,26 @@ export class AuthController {
     }
 
     @Post('multi/:id')
-    @UseInterceptors(FilesInterceptor('files'))
+    @UseInterceptors(FileInterceptor('file'))
+    @ApiBody({
+        description: 'File upload',
+        type: 'file', // Xác định loại dữ liệu của trường
+        schema: {
+            type: 'object',
+            properties: {
+                file: {
+                    type: 'file',
+                    description: 'The file to upload',
+                },
+            },
+        },
+    })
     async uploadMultiImage(
         @Param('id') id: string,
         @UploadedFiles() files: Express.Multer.File[],
     ) {
         // Xử lý việc tải lên nhiều tệp ở đây
         console.log(`Uploaded ${files.length} files for ID ${id}:`, files);
+        return await this.firebaseService.uploadMultiImage(files, id);
     }
 }

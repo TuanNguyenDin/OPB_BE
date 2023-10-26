@@ -7,11 +7,11 @@ import * as bcrypt from 'bcrypt';
 import { auth, firebaseConfig } from '../firebaseConfig'
 import { createUserWithEmailAndPassword, sendEmailVerification, signInWithEmailAndPassword } from 'firebase/auth';
 import { JwtService } from '@nestjs/jwt';
-import { User } from './entities/user.entities';
+import { Account } from './entities/user.entities';
 
 @Injectable()
 export class AuthService {
-    constructor(@InjectModel('User') private userModel: Model<User>, private jwtService: JwtService) { }
+    constructor(@InjectModel('Account') private AccountModel: Model<Account>, private jwtService: JwtService) { }
     async register(userData) {
         try {
             if (userData.password.length < 6) { throw new Error("Password should be at least 6 characters") }// kiểm tra độ dài của password trả về lỗi nếu nhỏ hơn 6 kí tự
@@ -19,14 +19,11 @@ export class AuthService {
             const userCredential = await createUserWithEmailAndPassword(auth, userData.email, userData.password);//lưu tài khoản và password vào firebase
             // await sendEmailVerification(auth.currentUser);//hàm gọi chức năng gửi mail xác nhận đăng kí của user
             // lưu thông tin người dùng vào database
-            const user = await new this.userModel({
-                name: userData.name,
+            const user = await new this.AccountModel({
                 email: userData.email,
-                phone: userData.phone,
-                password: hashpassword,
-                isAdmin: false
+                password: hashpassword
             }).save();
-            return user;
+            return userCredential;
         } catch (err) {
             //lỗi được firebase trả về 
             switch (err.code) {
@@ -46,7 +43,7 @@ export class AuthService {
     async login(userData) {
         try {
             const userCredential = await signInWithEmailAndPassword(auth, userData.email, userData.password);//xác thực đăng nhập người dùng với firebase
-            const user = await this.userModel.findOne({ name: userData.name } || { email: userData.email }).exec();//xác thực đăng nhập người dùng với database
+            const user = await this.AccountModel.findOne({ email: userData.email }).exec();//xác thực đăng nhập người dùng với database
             if (!user) {
                 throw new HttpException("User not found", HttpStatus.INTERNAL_SERVER_ERROR);
             }
@@ -76,6 +73,9 @@ export class AuthService {
             user,
             jwt
         }
+    }
+    async findUser(user_id) {
+      return await this.AccountModel.findById(user_id).exec();
     }
 }
 

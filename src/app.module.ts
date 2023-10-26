@@ -3,8 +3,16 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { MongooseModule } from '@nestjs/mongoose';
-import { ManagerModule } from './manager/manager.module';
 import { ConfigModule } from '@nestjs/config';
+import { RestaurantModule } from './restaurant/restaurant.module';
+import { OrderModule } from './order/order.module';
+import { FoodOrderModule } from './food_order/food_order.module';
+import { FoodModule } from './food/food.module';
+import { FoodCategoryModule } from './food_category/food_category.module';
+import { ServiceOrderModule } from './service_order/service_order.module';
+import { ServiceModule } from './service/service.module';
+import { LocationModule } from './location/location.module';
+import { AddressModule } from './address/address.module';
 
 @Module({
   imports: [ConfigModule.forRoot({
@@ -12,7 +20,16 @@ import { ConfigModule } from '@nestjs/config';
   }),
   MongooseModule.forRoot(process.env.DATA_BASE),
     AuthModule,
-    ManagerModule],
+    RestaurantModule,
+    OrderModule,
+    FoodOrderModule,
+    FoodModule,
+    FoodCategoryModule,
+    ServiceOrderModule,
+    ServiceModule,
+    LocationModule,
+    AddressModule
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
