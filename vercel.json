@@ -2,13 +2,14 @@
     "version":2,
     "builds": [
       {
-        "src": "./src/main.ts",
+        "src": "/src/main.ts",
         "use": "@vercel/node"
       }
     ],
     "routes":[{
         "src":"/(.*)",
-        "dest":"./src/main.ts"
+        "dest":"/src/main.ts",
+        "methods": ["GET", "POST", "PUT", "DELETE"]
     }],
     "env": {
         "MONGO_URL":"mongodb+srv://SE151153:SE151153@cluster0.eub0e5r.mongodb.net/OnlinePartybooking",
