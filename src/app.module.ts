@@ -13,10 +13,16 @@ import { ServiceOrderModule } from './service_order/service_order.module';
 import { ServiceModule } from './service/service.module';
 import { LocationModule } from './location/location.module';
 import { AddressModule } from './address/address.module';
+import { join } from 'path';
+import { ServeStaticModule } from '@nestjs/serve-static';
 
 @Module({
   imports: [ConfigModule.forRoot({
     envFilePath: ['.env', '.dev.env']
+  }),
+  ServeStaticModule.forRoot({
+    rootPath: join(__dirname, '..', 'swagger-static'),
+    serveRoot: process.env.NODE_ENV === 'development' ? '/' : '/swagger',
   }),
   MongooseModule.forRoot(process.env.DATA_BASE),
     AuthModule,
