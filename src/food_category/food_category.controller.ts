@@ -2,8 +2,10 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { FoodCategoryService } from './food_category.service';
 import { CreateFoodCategoryDto } from './dto/create-food_category.dto';
 import { UpdateFoodCategoryDto } from './dto/update-food_category.dto';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('food-category')
+@ApiTags('Category')
 export class FoodCategoryController {
   constructor(private readonly foodCategoryService: FoodCategoryService) {}
 
@@ -19,16 +21,16 @@ export class FoodCategoryController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.foodCategoryService.findOne(+id);
+    return this.foodCategoryService.findOne(id);
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateFoodCategoryDto: UpdateFoodCategoryDto) {
-    return this.foodCategoryService.update(+id, updateFoodCategoryDto);
+    return this.foodCategoryService.update(id, updateFoodCategoryDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.foodCategoryService.remove(+id);
+    return this.foodCategoryService.remove(id);
   }
 }

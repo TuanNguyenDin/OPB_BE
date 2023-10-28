@@ -2,8 +2,10 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { FoodService } from './food.service';
 import { CreateFoodDto } from './dto/create-food.dto';
 import { UpdateFoodDto } from './dto/update-food.dto';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('food')
+@ApiTags('Food')
 export class FoodController {
   constructor(private readonly foodService: FoodService) {}
 

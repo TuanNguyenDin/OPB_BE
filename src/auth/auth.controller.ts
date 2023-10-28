@@ -5,7 +5,7 @@ import { CreateAccountDto } from './dto/create-user.dto';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 
 @Controller('common')
-@ApiTags('Common')
+@ApiTags('Auth')
 export class AuthController {
     //Controller quy định các router nào sẽ sử dụng chức năng nào nằm trong service, cũng như là dữ liệu nào được truyền vào và sử dụng
     constructor(

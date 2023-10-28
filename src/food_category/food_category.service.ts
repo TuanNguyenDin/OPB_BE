@@ -1,26 +1,30 @@
 import { Injectable } from '@nestjs/common';
 import { CreateFoodCategoryDto } from './dto/create-food_category.dto';
 import { UpdateFoodCategoryDto } from './dto/update-food_category.dto';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { FoodCategory } from './entities/food_category.entity';
 
 @Injectable()
 export class FoodCategoryService {
-  create(createFoodCategoryDto: CreateFoodCategoryDto) {
-    return 'This action adds a new foodCategory';
+  constructor(@InjectModel('FoodCategory') private readonly foodCategoryModel:Model<FoodCategory>) {}
+  async create(createFoodCategoryDto: CreateFoodCategoryDto) {
+    return await this.foodCategoryModel.create(createFoodCategoryDto);
   }
 
-  findAll() {
-    return `This action returns all foodCategory`;
+  async findAll() {
+    return await this.foodCategoryModel.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} foodCategory`;
+  async findOne(id: string) {
+    return await this.foodCategoryModel.findById(id);
   }
 
-  update(id: number, updateFoodCategoryDto: UpdateFoodCategoryDto) {
-    return `This action updates a #${id} foodCategory`;
+  async update(id: string, updateFoodCategoryDto: UpdateFoodCategoryDto) {
+    return await this.foodCategoryModel.findByIdAndUpdate(id, updateFoodCategoryDto);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} foodCategory`;
+  async remove(id: string) {
+    return await this.foodCategoryModel.findByIdAndDelete(id);
   }
 }

@@ -2,12 +2,14 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { FoodOrderService } from './food_order.service';
 import { CreateFoodOrderDto } from './dto/create-food_order.dto';
 import { UpdateFoodOrderDto } from './dto/update-food_order.dto';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('food-order')
+@ApiTags('Food Order')
 export class FoodOrderController {
   constructor(private readonly foodOrderService: FoodOrderService) { }
 
-  @Post('order/:id/food')
+  @Post('order/:id')
   create(@Param('id') order_id: string, @Body() createFoodOrderDto: CreateFoodOrderDto, @Body() food_id: string) {
     return this.foodOrderService.create(createFoodOrderDto, order_id, food_id);
   }
