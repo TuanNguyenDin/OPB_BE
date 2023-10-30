@@ -24,7 +24,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
     rootPath: join(__dirname, '..', 'swagger-static'),
     serveRoot: process.env.NODE_ENV === 'development' ? '/' : '/api/swagger',
   }),
-  MongooseModule.forRoot(process.env.DATA_BASE),
+  MongooseModule.forRoot(process.env.MONGO_URL),
     AuthModule,
     RestaurantModule,
     OrderModule,
