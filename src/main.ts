@@ -20,7 +20,6 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('swagger', app, document, {
     customSiteTitle: 'Online Parties Booking',
-    customfavIcon: 'https://www.figma.com/embed?embed_host=share&url=https%3A%2F%2Fwww.figma.com%2Ffile%2FsQwVnTZctSYBhTlPX92vGj%2FOnline-Party-Booking%3Ftype%3Ddesign%26node-id%3D430%253A83%26mode%3Ddesign%26t%3Dl2TohMS7fTOSPcVv-1',
     customJs: [
       'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui-bundle.min.js',
       'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui-standalone-preset.min.js',
