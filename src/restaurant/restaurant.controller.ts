@@ -2,12 +2,14 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { RestaurantService } from './restaurant.service';
 import { CreateRestaurantDto } from './dto/create-restaurant.dto';
 import { UpdateRestaurantDto } from './dto/update-restaurant.dto';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('restaurant')
+@ApiTags('Restaurant')
 export class RestaurantController {
   constructor(private readonly restaurantService: RestaurantService) { }
 
-  @Post('account/:id/restaurant')
+  @Post('account/:id')
   create(@Param('id') id: string,
     @Body() createRestaurantDto: CreateRestaurantDto) {
     return this.restaurantService.create(id, createRestaurantDto);
@@ -23,7 +25,7 @@ export class RestaurantController {
     return this.restaurantService.findOne(+id);
   }
 
-  @Patch('account/:account_id/restaurant/:id')
+  @Patch('account/:account_id/:id')
   update(@Param('id') id: string,@Param('account_id') UseId: string, @Body() updateRestaurantDto: UpdateRestaurantDto) {
     return this.restaurantService.update(UseId, id, updateRestaurantDto);
   }
