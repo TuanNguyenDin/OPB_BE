@@ -1,4 +1,4 @@
-import { Body, Controller, Param, Post, UploadedFile, UploadedFiles, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, HttpCode, Param, Post, UploadedFile, UploadedFiles, UseInterceptors } from '@nestjs/common';
 import { AuthService, FirebaseService } from './auth.service';
 import { ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { CreateAccountDto } from './dto/create-user.dto';
@@ -13,12 +13,14 @@ export class AuthController {
         private readonly firebaseService: FirebaseService
     ) { }
     @Post('signup')
+    @HttpCode(200)
     async signUp(
         @Body() data: CreateAccountDto
     ) {
         return await this.authService.register(data)
     }
     @Post('signin')
+    @HttpCode(200)
     async signIn(
         @Body() data: CreateAccountDto
     ) {
@@ -27,6 +29,7 @@ export class AuthController {
 
 
     @Post('single/:folder')
+    @HttpCode(200)
     @UseInterceptors(FileInterceptor('file'))
     @ApiBody({
         description: 'File upload',
@@ -50,6 +53,7 @@ export class AuthController {
     }
 
     @Post('multi/:id')
+    @HttpCode(200)
     @UseInterceptors(FileInterceptor('file'))
     @ApiBody({
         description: 'File upload',
