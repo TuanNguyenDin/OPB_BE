@@ -19,10 +19,7 @@ export class AuthService {
             const userCredential = await createUserWithEmailAndPassword(auth, userData.email, userData.password);//lưu tài khoản và password vào firebase
             // await sendEmailVerification(auth.currentUser);//hàm gọi chức năng gửi mail xác nhận đăng kí của user
             // lưu thông tin người dùng vào database
-            const user = await new this.AccountModel({
-                email: userData.email,
-                password: hashpassword
-            }).save();
+            const user = await this.AccountModel.create(userData);
             return userCredential;
         } catch (err) {
             //lỗi được firebase trả về 

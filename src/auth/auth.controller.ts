@@ -14,9 +14,9 @@ export class AuthController {
     ) { }
     @Post('signup')
     async signUp(
-        @Body() { email, password }: CreateAccountDto
+        @Body() data: CreateAccountDto
     ) {
-        return await this.authService.register({ email: email, password: password })
+        return await this.authService.register(data)
     }
     @Post('signin')
     async signIn(
