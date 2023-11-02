@@ -19,8 +19,9 @@ export class AuthService {
             const userCredential = await createUserWithEmailAndPassword(auth, userData.email, userData.password);//lưu tài khoản và password vào firebase
             // await sendEmailVerification(auth.currentUser);//hàm gọi chức năng gửi mail xác nhận đăng kí của user
             // lưu thông tin người dùng vào database
+            userData.password = hashpassword;
             const user = await this.AccountModel.create(userData);
-            return userCredential;
+            return user;
         } catch (err) {
             //lỗi được firebase trả về 
             switch (err.code) {
@@ -73,6 +74,15 @@ export class AuthService {
     }
     async findUser(user_id) {
       return await this.AccountModel.findById(user_id).exec();
+    }
+    async findAll(){
+      return await this.AccountModel.find().exec();
+    }
+    async updateUser(user_id, userData){
+      return await this.AccountModel.findByIdAndUpdate(user_id, userData, {new: true}).exec();
+    }
+    async deleteUser(user_id){
+      return await this.AccountModel.findByIdAndDelete(user_id).exec();
     }
 }
 

@@ -26,6 +26,9 @@ export class FoodService {
     return await this.foodModel.findByIdAndUpdate(id, updateFoodDto);
   }
 
+  async findByCategory(condition:string) {
+    return await this.foodModel.find({category_id: condition}).exec();
+  }
   async remove(id: string) {
     return await this.foodModel.findByIdAndDelete(id);
   }

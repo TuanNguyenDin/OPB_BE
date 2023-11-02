@@ -33,4 +33,8 @@ export class FoodController {
   remove(@Param('id') id: string) {
     return this.foodService.remove(id);
   }
+  @Get('/find/:id')
+  findByCategory(@Param('id') condition:string) {
+    return this.foodService.findByCategory(condition);
+  }
 }
