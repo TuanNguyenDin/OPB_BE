@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { HydratedDocument } from "mongoose";
 
-@Schema()
+@Schema({timestamps: true})
 export class Service {
     @Prop({})
     image: string;
@@ -17,8 +17,6 @@ export class Service {
     created_by: string;
     @Prop({})
     updated_by: string;
-
-    timestamp: number;
 }
 
 export type ServiceDocument = HydratedDocument<Service>

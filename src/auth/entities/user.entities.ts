@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { HydratedDocument } from "mongoose";
 
-@Schema()
+@Schema({timestamps: true})
 export class Account {
     @Prop({ required: true })
     email: string;
@@ -17,8 +17,6 @@ export class Account {
     avatar: string;
     @Prop({ required: true })
     password: string;
-
-    timestamps: true
 }
 
 export type AccountDocument = HydratedDocument<Account>;

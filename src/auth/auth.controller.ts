@@ -5,7 +5,6 @@ import { CreateAccountDto } from './dto/create-user.dto';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 
 @Controller('common')
-@ApiTags('Auth')
 export class AuthController {
     //Controller quy định các router nào sẽ sử dụng chức năng nào nằm trong service, cũng như là dữ liệu nào được truyền vào và sử dụng
     constructor(
@@ -14,6 +13,7 @@ export class AuthController {
     ) { }
     @Post('signup')
     @HttpCode(200)
+    @ApiTags('Auth')
     async signUp(
         @Body() data: CreateAccountDto
     ) {
@@ -21,6 +21,7 @@ export class AuthController {
     }
     @Post('signin')
     @HttpCode(200)
+    @ApiTags('Auth')
     async signIn(
         @Body() data: CreateAccountDto
     ) {
@@ -29,6 +30,7 @@ export class AuthController {
 
 
     @Post('single/:folder')
+    @ApiTags('Auth')
     @ApiConsumes('multipart/form-data') 
     @UseInterceptors(FileInterceptor('file'))
     @ApiBody({
@@ -52,6 +54,7 @@ export class AuthController {
         return await this.firebaseService.uploadFile(folder, file);
     }
 
+    @ApiTags('Auth')
     @Post('multi/:id')
     @HttpCode(200)
     @UseInterceptors(FileInterceptor('files'))

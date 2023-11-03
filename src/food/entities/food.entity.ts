@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { HydratedDocument } from "mongoose";
 
-@Schema()
+@Schema({timestamps: true})
 export class Food {
     @Prop({})
     name: string;
@@ -17,8 +17,6 @@ export class Food {
     created_by: string;
     @Prop({})
     updated_by: string;
-
-    timestamps: true
 }
 
 export type FoodDocument = HydratedDocument<Food>;

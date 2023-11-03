@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { HydratedDocument } from "mongoose";
 
-@Schema()
+@Schema({timestamps: true})
 export class Order {
     @Prop({})
     customer_id: string;
@@ -31,8 +31,6 @@ export class Order {
     started_at: Date;
     @Prop({})
     ended_at: Date;
-
-    timestamps: true
 }
 export type OrderDocument = HydratedDocument<Order>;
 export const OrderSchema = SchemaFactory.createForClass(Order);
