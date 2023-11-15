@@ -79,6 +79,11 @@ export class AuthService {
       return await this.AccountModel.find().exec();
     }
     async updateUser(user_id, userData){
+      const currentUser = await this.AccountModel.findById(user_id).exec();
+      const hashpassword = await bcrypt.hash(userData.password, 12);
+      if(userData.password !== currentUser.password){
+        userData.password = hashpassword;
+      }
       return await this.AccountModel.findByIdAndUpdate(user_id, userData, {new: true}).exec();
     }
     async deleteUser(user_id){
