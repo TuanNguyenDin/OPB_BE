@@ -12,6 +12,8 @@ export class Service {
     @Prop({})
     description: string;
     @Prop({})
+    resstaurant_id: string;
+    @Prop({})
     price: number;
     @Prop({})
     created_by: string;

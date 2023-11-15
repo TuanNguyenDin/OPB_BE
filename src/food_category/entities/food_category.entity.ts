@@ -10,6 +10,8 @@ export class FoodCategory {
     @Prop({})
     description: string;
     @Prop({})
+    restaurant_id: string;
+    @Prop({})
     created_by: string;
     @Prop({})
     updated_by: string;

@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, HttpCode, Param, Post, UploadedFile, UploadedFiles, UseInterceptors } from '@nestjs/common';
 import { AuthService, FirebaseService } from './auth.service';
-import { ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CreateAccountDto } from './dto/create-user.dto';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 
@@ -14,6 +14,7 @@ export class AuthController {
     @Post('signup')
     @HttpCode(200)
     @ApiTags('Auth')
+    @ApiOperation({ summary: 'user signup' })
     async signUp(
         @Body() data: CreateAccountDto
     ) {
@@ -22,6 +23,7 @@ export class AuthController {
     @Post('signin')
     @HttpCode(200)
     @ApiTags('Auth')
+    @ApiOperation({ summary: 'user signin' })
     async signIn(
         @Body() data: CreateAccountDto
     ) {
@@ -31,6 +33,7 @@ export class AuthController {
 
     @Post('single/:folder')
     @ApiTags('Auth')
+    @ApiOperation({ summary: 'Upload single file' })
     @ApiConsumes('multipart/form-data') 
     @UseInterceptors(FileInterceptor('file'))
     @ApiBody({
@@ -57,6 +60,7 @@ export class AuthController {
     @ApiTags('Auth')
     @Post('multi/:id')
     @HttpCode(200)
+    @ApiOperation({ summary: 'Upload multiple files' })
     @UseInterceptors(FileInterceptor('files'))
     @ApiBody({
         description: 'File upload',
@@ -83,20 +87,24 @@ export class AuthController {
     @Get('user')
     @HttpCode(200)
     @ApiTags('User')
+    @ApiOperation({ summary: 'Get all users' })
     async getUserAll() { return await this.authService.findAll() }
 
     @Get('user/:id')
     @HttpCode(200)
+    @ApiOperation({ summary: 'Get user by id' })
     @ApiTags('User')
     async getUser(@Param('id') id: string) { return await this.authService.findUser(id) }
 
     @Post('user/:id')
     @HttpCode(200)
     @ApiTags('User')
+    @ApiOperation({ summary: 'Update user by id' })
     async updateUser(@Param('id') id: string, @Body() data: CreateAccountDto) { return await this.authService.updateUser(id, data) }
 
     @Delete('user/:id')
     @HttpCode(200)
     @ApiTags('User')
+    @ApiOperation({ summary: 'Delete user by id' })
     async deleteUser(@Param('id') id: string) { return await this.authService.deleteUser(id) }
 }
