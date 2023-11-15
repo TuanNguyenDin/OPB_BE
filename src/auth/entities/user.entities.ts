@@ -3,19 +3,19 @@ import { HydratedDocument } from "mongoose";
 
 @Schema({timestamps: true})
 export class Account {
-    @Prop({ required: true })
+    @Prop({})
     email: string;
-    @Prop({ required: true })
+    @Prop({})
     role: string;
-    @Prop({ required: true })
+    @Prop({})
     status: string;
-    @Prop({ required: true })
+    @Prop({})
     phone_number: string;
-    @Prop({ required: true })
+    @Prop({})
     full_name: string;
-    @Prop({ required: true })
+    @Prop({})
     avatar: string;
-    @Prop({ required: true })
+    @Prop({})
     password: string;
 }
 
