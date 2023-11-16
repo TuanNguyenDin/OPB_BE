@@ -7,6 +7,8 @@ export class CreateFoodCategoryDto {
     name: string;
     @ApiProperty({example: 'food description', description: 'description of the food category'})
     description: string;
+    @ApiProperty({example: '1', description: 'Restaurant id'})
+    restaurant_id: string;
     @ApiProperty({example: 'Jhon', description: 'User who create this food category'})
     created_by: string;
     @ApiProperty({example: 'Jhon', description: 'User who update this food category'})
