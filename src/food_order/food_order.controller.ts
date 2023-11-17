@@ -9,7 +9,7 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 export class FoodOrderController {
   constructor(private readonly foodOrderService: FoodOrderService) { }
 
-  @Post('order/:id')
+  @Post()
   @ApiOperation({ summary: 'Creates a food order' })
   create(@Body() createFoodOrderDto: CreateFoodOrderDto) {
     return this.foodOrderService.create(createFoodOrderDto);
