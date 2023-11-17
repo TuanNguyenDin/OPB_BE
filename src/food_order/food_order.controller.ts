@@ -11,8 +11,8 @@ export class FoodOrderController {
 
   @Post('order/:id')
   @ApiOperation({ summary: 'Creates a food order' })
-  create(@Param('id') order_id: string, @Body() createFoodOrderDto: CreateFoodOrderDto, @Param() food_id: string) {
-    return this.foodOrderService.create(createFoodOrderDto, order_id, food_id);
+  create(@Body() createFoodOrderDto: CreateFoodOrderDto) {
+    return this.foodOrderService.create(createFoodOrderDto);
   }
 
   @Get()
