@@ -87,7 +87,8 @@ export class AuthService {
       return await this.AccountModel.findByIdAndUpdate(user_id, userData, {new: true}).exec();
     }
     async deleteUser(user_id){
-      return await this.AccountModel.findByIdAndDelete(user_id).exec();
+      /* return await this.AccountModel.findByIdAndDelete(user_id).exec(); */
+      return await this.AccountModel.findByIdAndUpdate(user_id, {status: 'deactivated'}, {new: true}).exec();
     }
 }
 
