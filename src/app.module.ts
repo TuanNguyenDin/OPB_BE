@@ -13,8 +13,10 @@ import { ServiceOrderModule } from './service_order/service_order.module';
 import { ServiceModule } from './service/service.module';
 import { LocationModule } from './location/location.module';
 import { AddressModule } from './address/address.module';
+import { HttpModule } from '@nestjs/axios';
 import { join } from 'path';
 import { ServeStaticModule } from '@nestjs/serve-static';
+import { PaymentModule } from './payment/payment.module';
 
 @Module({
   imports: [ConfigModule.forRoot({
@@ -34,7 +36,9 @@ import { ServeStaticModule } from '@nestjs/serve-static';
     ServiceOrderModule,
     ServiceModule,
     LocationModule,
-    AddressModule
+    AddressModule,
+    PaymentModule,
+    HttpModule
   ],
   controllers: [AppController],
   providers: [AppService],

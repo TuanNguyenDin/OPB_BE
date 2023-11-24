@@ -15,7 +15,7 @@ export class FoodOrderService {
     @InjectModel('Food') private readonly foodModel: Model<Food>
   ) {}
   async create(createFoodOrderDto: CreateFoodOrderDto,) {
-    const order = await this.orderModel.findById(createFoodOrderDto.order_id);
+    // const order = await this.orderModel.findById(createFoodOrderDto.order_id);
     const food = await this.foodModel.findById(createFoodOrderDto.food_id);
     // if (!order) {throw new HttpException('Order not found', 404);}
     if (!food) {throw new HttpException('Food not found', 404);}

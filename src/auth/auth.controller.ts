@@ -107,4 +107,10 @@ export class AuthController {
     @ApiTags('User')
     @ApiOperation({ summary: 'Delete user by id' })
     async deleteUser(@Param('id') id: string) { return await this.authService.deleteUser(id) }
+
+    @Post('/verify/:phone')
+    @ApiTags('User')
+    async verifyPhone(@Param('phone') phone: string, @Body() code: string) {
+        
+    }
 }
