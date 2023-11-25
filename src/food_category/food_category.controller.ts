@@ -20,6 +20,11 @@ export class FoodCategoryController {
   findAll() {
     return this.foodCategoryService.findAll();
   }
+  @Get('restaurant/:id')
+  @ApiOperation({summary: 'Finds by restaurant categories'})
+  findByRestaurant(@Param('id') id: string) {
+    return this.foodCategoryService.findbyRestaurant(id);
+  }
 
   @Get(':id')
   @ApiOperation({summary: 'Finds a category'})

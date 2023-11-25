@@ -34,8 +34,8 @@ export class RestaurantController {
     return this.restaurantService.update(UseId, id, updateRestaurantDto);
   }
 
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.restaurantService.remove(id);
-  // }
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.restaurantService.remove(id);
+  }
 }

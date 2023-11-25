@@ -21,6 +21,11 @@ export class ServiceController {
     return this.serviceService.findAll();
   }
 
+  @Get('restaurant/:id')
+  @ApiOperation({summary: 'Finds service by restaurant'})
+  findbyRestaurant(@Param('id') id: string) {
+    return this.serviceService.findByRestaurant(id);
+  }
   @Get(':id')
   @ApiOperation({summary: 'Finds a service'})
   findOne(@Param('id') id: string) {

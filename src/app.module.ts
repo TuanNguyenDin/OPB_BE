@@ -17,6 +17,7 @@ import { HttpModule } from '@nestjs/axios';
 import { join } from 'path';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { PaymentModule } from './payment/payment.module';
+import { ComboMenuModule } from './combo_menu/combo_menu.module';
 
 @Module({
   imports: [ConfigModule.forRoot({
@@ -38,7 +39,8 @@ import { PaymentModule } from './payment/payment.module';
     LocationModule,
     AddressModule,
     PaymentModule,
-    HttpModule
+    HttpModule,
+    ComboMenuModule
   ],
   controllers: [AppController],
   providers: [AppService],
