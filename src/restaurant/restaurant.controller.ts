@@ -25,7 +25,12 @@ export class RestaurantController {
   @Get(':id')
   @ApiOperation({summary: 'Finds a restaurant'})
   findOne(@Param('id') id: string) {
-    return this.restaurantService.findOne(+id);
+    return this.restaurantService.findOne(id);
+  }
+  @Get('/acount/:id')
+  @ApiOperation({summary: 'Finds a restaurant'})
+  findByOwnner(@Param('id') id: string) {
+    return this.restaurantService.findByOwner(id);
   }
 
   @Patch('account/:account_id/:id')

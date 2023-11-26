@@ -51,6 +51,18 @@ export class ComboMenuService {
         throw new HttpException('Invalid model type name', 400);
     }
   }
+  async findByRestaurant(id: string, modelType: 'combo' | 'food' | 'service') {
+    switch (modelType) {
+      case 'combo':
+        return await this.comboMenuModel.findOne({restaurant_id: id}).exec();
+      case 'food':
+        return await this.foodPackageModel.findOne({restaurant_id: id}).exec();
+      case 'service':
+        return await this.servicePackageModel.findOne({restaurant_id: id}).exec();
+      default:
+        throw new HttpException('Invalid model type name', 400);
+    }
+  }
 
   update(id: string, createPackageDto: CreateComboMenuDto | CreateFoodPackageDto | CreateServicePackageDto, modelType: 'combo' | 'food' | 'service') {
     switch (modelType) {

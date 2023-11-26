@@ -22,8 +22,14 @@ export class RestaurantService {
     return await this.restaurantModel.find().exec();
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     return  await this.restaurantModel.findById(id).exec();
+  }
+
+  async findByOwner(id: string) {
+    const owner = await this.userModel.findById(id);
+    if (!owner) {throw new HttpException('User not found', 404);}
+    return await this.restaurantModel.find({created_by: owner._id}).exec();
   }
 
   async update(UseId: string, id: string, updateRestaurantDto: UpdateRestaurantDto) {

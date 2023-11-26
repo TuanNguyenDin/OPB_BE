@@ -27,6 +27,12 @@ export class ComboMenuController {
     return this.comboMenuService.findOne(id, modelType);
   }
 
+  @Get('/restaurant/:modelType/:id')
+  @ApiOperation({ summary: 'Finds a package flown model type combo, food or service' })
+  findByRestaurant(@Param('id') id: string, @Param('modelType') modelType: 'combo' | 'food' | 'service') {
+    return this.comboMenuService.findByRestaurant(id, modelType);
+  }
+
   @Patch(':id')
   @ApiOperation({ summary: 'Updates a package flown model type combo, food or service' })
   update(@Param('id') id: string, @Body() createPackageDto: CreatePackageDto) {
