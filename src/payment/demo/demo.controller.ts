@@ -33,10 +33,8 @@ export class DemoController {
       dto,
     );
 
-    return {
-      success: true,
-      paymentUrl: url.toString(),
-    };
+    res.redirect(url.toString());
+    return ({ url: url.toString() });
   }
 
   @Get('vnpay_return')
