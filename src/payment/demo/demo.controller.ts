@@ -1,10 +1,10 @@
 import { Controller, Get, Post, Body, Res, Req, Query } from '@nestjs/common';
 import { DemoService } from './demo.service';
-import { demoCreateUrlDto } from './dto/create-demo.dto';
+import { QueryDrDto, demoCreateUrlDto } from './dto/create-demo.dto';
 
 import { type Response, type Request } from 'express';
 import { OrderService } from '../order/order.service';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 @Controller('payment')
 @ApiTags('Payment')
@@ -37,6 +37,7 @@ export class DemoController {
   }
 
   @Get('vnpay_return')
+  @ApiOperation({ summary: 'Check return from vnpay, auto run after do payment, default return is 404' })
   vnpayReturn(@Query() query) {
     const result = this.orderService.checkReturn(query);
     return result;
@@ -54,6 +55,7 @@ export class DemoController {
 
   @Post('querydr')
   @ApiOperation({ summary: 'Query payment results' })
+  @ApiBody({ type: QueryDrDto })
   async postQuerydr(
     @Req() req: Request,
     @Res() res: Response,

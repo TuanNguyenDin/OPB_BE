@@ -37,7 +37,7 @@ export class DemoService {
     url.searchParams.set('vnp_Locale', language);
     url.searchParams.set('vnp_CurrCode', 'VND');
     url.searchParams.set('vnp_TxnRef', orderIds);
-    url.searchParams.set('vnp_OrderInfo', 'Giao dich cho orderId ' + orderIds);
+    url.searchParams.set('vnp_OrderInfo', 'Giao dich số ' + orderIds);
     url.searchParams.set('vnp_OrderType', 'other');
     url.searchParams.set('vnp_Amount', (+amount * 100).toString());
     url.searchParams.set('vnp_ReturnUrl', this.returnUrl);

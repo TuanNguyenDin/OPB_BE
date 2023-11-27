@@ -76,8 +76,8 @@ export class OrderService {
 
     const secureHash = vnp_Params['vnp_SecureHash'];
     const responseCode = vnp_Params['vnp_ResponseCode'];
-    const orderId = vnp_Params['vnp_TxnRef'];
-    const orderInfo = vnp_Params['vnp_OrderInfo'];
+    const transaction_id = vnp_Params['vnp_TxnRef'];
+    const transaction_info = vnp_Params['vnp_OrderInfo'];
 
     delete vnp_Params['vnp_SecureHash'];
     delete vnp_Params['vnp_SecureHashType'];
@@ -91,16 +91,16 @@ export class OrderService {
       switch (responseCode) {
         case '00':
           return {
-            orderId,
-            orderInfo,
+            transactionId: transaction_id,
+            transactionInfo: transaction_info,
             RspCode: '00',
             message: 'Thành công',
             status: true,
           };
         case '07':
           return {
-            orderId,
-            orderInfo,
+            transactionId: transaction_id,
+            transactionInfo: transaction_info,
             RspCode: '07',
             message:
               'Trừ tiền thành công. Giao dịch bị nghi ngờ (liên quan tới lừa đảo, giao dịch bất thường).',
@@ -108,8 +108,8 @@ export class OrderService {
           };
         case '09':
           return {
-            orderId,
-            orderInfo,
+            transactionId: transaction_id,
+            transactionInfo: transaction_info,
             RspCode: '09',
             message:
               'Thẻ/Tài khoản của khách hàng chưa đăng ký dịch vụ InternetBanking tại ngân hàng',
@@ -117,8 +117,8 @@ export class OrderService {
           };
         case '10':
           return {
-            orderId,
-            orderInfo,
+            transactionId: transaction_id,
+            transactionInfo: transaction_info,
             RspCode: '10',
             message:
               'Thẻ/Tài khoản của khách hàng chưa đăng ký dịch vụ InternetBanking tại ngân hàng',
@@ -126,8 +126,8 @@ export class OrderService {
           };
         case '11':
           return {
-            orderId,
-            orderInfo,
+            transactionId: transaction_id,
+            transactionInfo: transaction_info,
             RspCode: '11',
             message:
               'Đã hết hạn chờ thanh toán. Xin quý khách vui lòng thực hiện lại giao dịch.',
@@ -135,8 +135,8 @@ export class OrderService {
           };
         case '12':
           return {
-            orderId,
-            orderInfo,
+            transactionId: transaction_id,
+            transactionInfo: transaction_info,
             RspCode: '12',
             message:
               'Đã hết hạn chờ thanh toán. Xin quý khách vui lòng thực hiện lại giao dịch.',
@@ -144,8 +144,8 @@ export class OrderService {
           };
         case '13':
           return {
-            orderId,
-            orderInfo,
+            transactionId: transaction_id,
+            transactionInfo: transaction_info,
             RspCode: '13',
             message:
               'Quý khách nhập sai mật khẩu xác thực giao dịch (OTP). Xin quý khách vui lòng thực hiện lại giao dịch.',
@@ -153,8 +153,8 @@ export class OrderService {
           };
         case '24':
           return {
-            orderId,
-            orderInfo,
+            transactionId: transaction_id,
+            transactionInfo: transaction_info,
             RspCode: '24',
             message:
               'Quý khách nhập sai mật khẩu xác thực giao dịch (OTP). Xin quý khách vui lòng thực hiện lại giao dịch.',
@@ -162,8 +162,8 @@ export class OrderService {
           };
         case '51':
           return {
-            orderId,
-            orderInfo,
+            transactionId: transaction_id,
+            transactionInfo: transaction_info,
             RspCode: '51',
             message:
               'Tài khoản của quý khách không đủ số dư để thực hiện giao dịch.',
@@ -171,8 +171,8 @@ export class OrderService {
           };
         case '65':
           return {
-            orderId,
-            orderInfo,
+            transactionId: transaction_id,
+            transactionInfo: transaction_info,
             RspCode: '65',
             message:
               'Tài khoản của Quý khách đã vượt quá hạn mức giao dịch trong ngày.',
@@ -180,8 +180,8 @@ export class OrderService {
           };
         case '75':
           return {
-            orderId,
-            orderInfo,
+            transactionId: transaction_id,
+            transactionInfo: transaction_info,
             RspCode: '75',
             message:
               'Tài khoản của Quý khách đã vượt quá hạn mức giao dịch trong ngày.',
@@ -189,8 +189,8 @@ export class OrderService {
           };
         case '79':
           return {
-            orderId,
-            orderInfo,
+            transactionId: transaction_id,
+            transactionInfo: transaction_info,
             RspCode: '79',
             message:
               'KH nhập sai mật khẩu thanh toán quá số lần quy định. Xin quý khách vui lòng thực hiện lại giao dịc',
@@ -198,8 +198,8 @@ export class OrderService {
           };
         case '99':
           return {
-            orderId,
-            orderInfo,
+            transactionId: transaction_id,
+            transactionInfo: transaction_info,
             RspCode: '99',
             message: 'Lỗi khác chưa xác định',
             status: false,
@@ -207,8 +207,8 @@ export class OrderService {
       }
     }
     return {
-      orderId,
-      orderInfo,
+      transactionId: transaction_id,
+      transactionInfo: transaction_info,
       RspCode: '99',
       message: 'Giao dich thất bại',
       status: false,
