@@ -54,11 +54,11 @@ export class ComboMenuService {
   async findByRestaurant(id: string, modelType: 'combo' | 'food' | 'service') {
     switch (modelType) {
       case 'combo':
-        return await this.comboMenuModel.findOne({restaurant_id: id}).exec();
+        return await this.comboMenuModel.find({restaurant_id: id}).exec();
       case 'food':
-        return await this.foodPackageModel.findOne({restaurant_id: id}).exec();
+        return await this.foodPackageModel.find({restaurant_id: id}).exec();
       case 'service':
-        return await this.servicePackageModel.findOne({restaurant_id: id}).exec();
+        return await this.servicePackageModel.find({restaurant_id: id}).exec();
       default:
         throw new HttpException('Invalid model type name', 400);
     }

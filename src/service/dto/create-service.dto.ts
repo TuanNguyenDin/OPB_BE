@@ -6,4 +6,5 @@ export class CreateServiceDto {
     price: number;
     created_by: string;
     updated_by: string;
+    restaurant_id: string;
 }

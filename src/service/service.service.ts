@@ -31,7 +31,7 @@ export class ServiceService {
   async findByRestaurant(id: string) {
     const restaurant = await this.restaurantModel.findById(id).exec();
     if (!restaurant) { throw new HttpException('Can not find restaurant', 404) }
-    return await this.serviceModel.find({ restaurant: restaurant._id }).exec();
+    return await this.serviceModel.find({ restaurant_id: id }).exec();
   }
 
   async update(id: string, updateServiceDto: UpdateServiceDto) {
