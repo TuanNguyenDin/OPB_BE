@@ -33,7 +33,7 @@ export class DemoController {
       dto,
     );
 
-    res.redirect(url.toString());
+    // res.redirect(url.toString());
     return ({ "paymentUrl": url.toString() });
   }
 
