@@ -41,7 +41,7 @@ export class OrderService {
     return await this.orderModel.findByIdAndUpdate(id, updateOrderDto, { new: true });
   }
 
-  remove(id: number) {
+  remove(id: string) {
     return `This action removes a #${id} order`;
   }
 }

@@ -9,16 +9,14 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { VNPAYService } from './payment.service';
+import { OrderService } from './order.service';
 
 import { type Request, type Response } from 'express';
-import { createPaymentURLDto } from "./dtos/payment.dto"
-import { ApiTags } from '@nestjs/swagger';
+import { createPaymentURLDto } from './dtos/order.dto';
 
-@Controller('payment')
-@ApiTags('Payment')
-export class PaymentController {
-  constructor(private readonly orderService: VNPAYService) {}
+@Controller('vnpay/order')
+export class OrderController {
+  constructor(private readonly orderService: OrderService) {}
 
   @Post()
   @UsePipes(
@@ -39,10 +37,10 @@ export class PaymentController {
   ) {
     const ipAddr = req.headers['x-forwarded-for'];
 
-    const ip = typeof ipAddr === 'string' ? ipAddr : Array.isArray(ipAddr) ? ipAddr[0] : undefined;
-
-    const url = this.orderService.createPaymentURL(ip, dto);
-    
+    const url = this.orderService.createPaymentURL(
+      typeof ipAddr === 'string' ? ipAddr : ipAddr[0],
+      dto,
+    );
 
     res.redirect(url.toString());
   }

@@ -37,8 +37,9 @@ export class OrderController {
     return this.orderService.update(id, updateOrderDto, use_id);
   }
 
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.orderService.remove(+id);
-  // }
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.orderService.remove(id);
+  }
+
 }

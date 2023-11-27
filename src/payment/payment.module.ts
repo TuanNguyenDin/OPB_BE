@@ -1,14 +1,20 @@
 import { Module } from '@nestjs/common';
-import { HttpModule } from '@nestjs/axios';
 import { ConfigModule } from '@nestjs/config';
-import { VNPAYService } from './payment.service';
-import { PaymentController } from './payment.controller';
+import { HttpModule } from '@nestjs/axios';
+import { OrderModule } from './order/order.module';
+import { DemoModule } from './demo/demo.module';
+import { MongooseModule } from '@nestjs/mongoose';
+import { paymentSchema } from './payment.entity';
 
 @Module({
-  imports: [ConfigModule.forRoot({
-    envFilePath: ['.env', '.dev.env']
-  }), HttpModule],
-  controllers: [PaymentController],
-  providers: [VNPAYService],
+  imports: [
+    MongooseModule.forFeature([{name:'Payment', schema:paymentSchema},]),
+    ConfigModule.forRoot({ isGlobal: true, envFilePath: ['.env'] }),
+    HttpModule,
+    OrderModule,
+    DemoModule,
+  ],
+  controllers: [],
+  providers: [],
 })
-export class PaymentModule { }
+export class PaymentModule {}

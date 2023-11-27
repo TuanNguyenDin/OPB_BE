@@ -6,12 +6,12 @@ import { DateTime } from 'luxon';
 import { createHmac } from 'crypto';
 import { lastValueFrom } from 'rxjs';
 
-import { VNP_URL, VNP_VERSION } from "./constants/api.constant"
+import { VNP_URL, VNP_VERSION } from './constants/api.constant';
 
-import { createPaymentURLDto } from "./dtos/payment.dto"
+import { createPaymentURLDto } from './dtos/order.dto';
 
 @Injectable()
-export class VNPAYService {
+export class OrderService {
   tmnCode: string;
   hashSecret: string;
   returnUrl: string;
