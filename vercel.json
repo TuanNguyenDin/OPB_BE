@@ -1,24 +1,29 @@
 {
-    "version":2,
-    "builds": [
-      {
-        "src": "/src/main.ts",
-        "use": "@vercel/node"
-      }
-    ],
-    "routes":[{
-        "src":"/(.*)",
-        "dest":"/src/main.ts",
-        "methods": ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-          "headers": {
-            "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Methods": "GET, POST, PATCH, PUT, DELETE, OPTIONS",
-            "Access-Control-Allow-Headers": "Origin, Content-Type, X-Auth-Token"
-          }
-    }],
-    "env": {
-        "MONGO_URL":"mongodb+srv://SE151153:SE151153@cluster0.eub0e5r.mongodb.net/OnlinePartybooking",
-        "JWT_SECRET":"OnlinePartybooking",
-        "EXPIRES_IN_SECONDS":"10800s"
+  "version": 2,
+  "builds": [
+    {
+      "src": "/src/main.ts",
+      "use": "@vercel/node"
     }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/src/main.ts",
+      "methods": ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, POST, PATCH, PUT, DELETE, OPTIONS",
+        "Access-Control-Allow-Headers": "Origin, Content-Type, X-Auth-Token"
+      }
+    }
+  ],
+  "env": {
+    "MONGO_URL": "mongodb+srv://SE151153:SE151153@cluster0.eub0e5r.mongodb.net/OnlinePartybooking",
+    "JWT_SECRET": "OnlinePartybooking",
+    "EXPIRES_IN_SECONDS": "10800s",
+    "VNP_TMNCODE": "GEAWC9W3",
+    "VNP_HASH_SECRET": "EHWTBHLGLXNSRQVYZDQOOUJHMQALLNCP",
+    "VNP_RETURN_URL": "https://opb-be.vercel.app/payment/vnpay_return"
   }
+}
