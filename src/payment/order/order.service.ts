@@ -9,6 +9,9 @@ import { lastValueFrom } from 'rxjs';
 import { VNP_URL, VNP_VERSION } from './constants/api.constant';
 
 import { createPaymentURLDto } from './dtos/order.dto';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { payment } from '../payment.entity';
 
 @Injectable()
 export class OrderService {
@@ -17,6 +20,7 @@ export class OrderService {
   returnUrl: string;
 
   constructor(
+    @InjectModel('Payment') private readonly paymentModel: Model<payment>,
     private readonly configService: ConfigService,
     private readonly httpService: HttpService,
   ) {
@@ -34,6 +38,7 @@ export class OrderService {
       orderId,
       returnUrl,
     }: createPaymentURLDto,
+    orderCreated: string
   ) {
     process.env.TZ = 'Asia/Ho_Chi_Minh';
     const now = DateTime.now().setZone('Asia/Ho_Chi_Minh');
@@ -67,11 +72,22 @@ export class OrderService {
       .digest('hex');
 
     url.searchParams.set('vnp_SecureHash', signed);
-
-    return url;
+    const paymentStore = new this.paymentModel({
+      amount: amount,
+      order_id: orderCreated,
+      method: 'vnpay',
+      content: message,
+      status: 'pending',
+      reference_transaction_id: orderId,
+      created_at: now.toJSDate(),
+      created_by: 'SYSTEM',
+      updated_at: now.toJSDate(),
+      updated_by: 'SYSTEM',
+    });
+    return { url: url.toString(), paymentStore: paymentStore };
   }
 
-  checkReturn(query: any) {
+  async checkReturn(query: any) {
     const vnp_Params = query;
 
     const secureHash = vnp_Params['vnp_SecureHash'];
@@ -86,7 +102,33 @@ export class OrderService {
 
     const hmac = createHmac('SHA512', this.hashSecret);
     const signed = hmac.update(Buffer.from(newParams, 'utf-8')).digest('hex');
-
+    let paymentRecord = await this.paymentModel.findOne({ reference_transaction_id: transaction_id });
+    if (paymentRecord) {
+      paymentRecord.status = 'completed';
+      paymentRecord.updated_at = DateTime.now().toJSDate();
+      paymentRecord.updated_by = 'SYSTEM';
+    } else {
+      paymentRecord = new this.paymentModel({
+        amount: 0,
+        order_id: '',
+        method: 'vnpay',
+        content: 'Không thể tìm thấy đơn hàng của bạn, Hãy liên hệ admin để được giải quyết ngay lập tức ' + transaction_info,
+        status: 'completed',
+        reference_transaction_id: transaction_id,
+        created_at: DateTime.now().toJSDate(),
+        created_by: 'SYSTEM',
+        updated_at: DateTime.now().toJSDate(),
+        updated_by: 'SYSTEM',
+      });
+      return {
+        transactionId: transaction_id,
+        transactionInfo: transaction_info,
+        RspCode: '99',
+        message: 'Lỗi khác chưa xác định',
+        status: false,
+      };
+    }
+    await paymentRecord.save();
     if (signed === secureHash) {
       switch (responseCode) {
         case '00':
@@ -246,7 +288,7 @@ export class OrderService {
             if (rspCode == '00') {
               //thanh cong
               //paymentStatus = '1'
-              // Ở đây cập nhật trạng thái giao dịch thanh toán thành công vào CSDL của bạn
+              // Ở đây cập nhật trạng thái giao dịch thanh toán thành công vào CSDL của bạnz
               return { RspCode: '00', message: 'Success' };
               // res.status(200).json({orderId, orderInfo, RspCode: '00', message: 'Success' });
             } else {

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Res, Req, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Res, Req, Query, Param } from '@nestjs/common';
 import { DemoService } from './demo.service';
 import { QueryDrDto, demoCreateUrlDto } from './dto/create-demo.dto';
 
@@ -7,7 +7,7 @@ import { OrderService } from '../order/order.service';
 import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 @Controller('payment')
-@ApiTags('Payment')
+@ApiTags('PaymentDemo')
 export class DemoController {
   constructor(
     private readonly demoService: DemoService,
@@ -19,7 +19,7 @@ export class DemoController {
   //   return res.render('order', { title: 'Tạo mới đơn hàng.' });
   // }
 
-  @Post('create_payment_url')
+  @Post('create_payment_url/:orderCreated')
   @ApiOperation({ summary: 'Creates a payment url' })
   postPaymentUrl(
     @Req() req: Request,
@@ -31,13 +31,14 @@ export class DemoController {
     const url = this.demoService.demoCreatePaymentURL(
       typeof ipAddr === 'string' ? ipAddr : ipAddr[0],
       dto,
+      
     );
 
     res.json({ url: url.toString() });
   }
 
   @Get('vnpay_return')
-  @ApiOperation({ summary: 'Check return from vnpay, auto run after do payment, default return is 404' })
+  @ApiOperation({ summary: 'Check return from vnpay, auto run after do payment, default return is code 99 transaction fail' })
   vnpayReturn(@Query() query) {
     const result = this.orderService.checkReturn(query);
     return result;
