@@ -34,6 +34,7 @@ export class DemoController {
     );
 
     res.redirect(url.toString());
+    return url.toString();
   }
 
   @Get('vnpay_return')
