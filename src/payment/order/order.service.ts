@@ -87,7 +87,7 @@ export class OrderService {
         updated_by: 'SYSTEM',
       })
     );
-    return { url: url.toString(), paymentStore };
+    return { url: url.toString(), paymentStore: paymentStore };
   }
 
   async checkReturn(query: any) {
