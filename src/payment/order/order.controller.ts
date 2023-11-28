@@ -95,7 +95,7 @@ export class OrderController {
     res.json({ data: url.paymentStore, url: url.url.toString() });
   }
 
-  @Get('vnpay_return/:orderCreated')
+  @Get('vnpay_return')
   @ApiOperation({ summary: 'Check return from vnpay, auto run after do payment, default return is code 99 transaction fail' })
   vnpayReturn(@Query() query) {
     const result = this.orderService.checkReturn(query);

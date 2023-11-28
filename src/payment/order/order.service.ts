@@ -123,13 +123,6 @@ export class OrderService {
         updated_at: DateTime.now().toJSDate(),
         updated_by: 'SYSTEM',
       });
-      return {
-        transactionId: transaction_id,
-        transactionInfo: transaction_info,
-        RspCode: '99',
-        message: 'Lỗi khác chưa xác định',
-        status: false,
-      };
     }
     await paymentRecord.save();
     if (signed === secureHash) {
