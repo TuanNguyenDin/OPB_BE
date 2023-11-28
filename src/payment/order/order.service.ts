@@ -73,7 +73,7 @@ export class OrderService {
       .digest('hex');
 
     url.searchParams.set('vnp_SecureHash', signed);
-    const paymentStore = this.paymentModel.create(
+    const paymentStore =
       new paymentDTO({
         amount: amount,
         order_id: orderCreated,
@@ -86,7 +86,7 @@ export class OrderService {
         updated_at: now.toJSDate(),
         updated_by: 'SYSTEM',
       })
-    );
+      this.paymentModel.create(paymentStore);
     return { url: url.toString(), paymentStore: paymentStore };
   }
 
