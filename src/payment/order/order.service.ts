@@ -72,7 +72,7 @@ export class OrderService {
       .digest('hex');
 
     url.searchParams.set('vnp_SecureHash', signed);
-    const paymentStore = new this.paymentModel({
+    const paymentStore = this.paymentModel.create({
       amount: amount,
       order_id: orderCreated,
       method: 'vnpay',
