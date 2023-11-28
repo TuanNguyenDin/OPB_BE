@@ -12,7 +12,7 @@ export class Service {
     @Prop({})
     description: string;
     @Prop({})
-    resstaurant_id: string;
+    restaurant_id: string;
     @Prop({})
     price: number;
     @Prop({})
