@@ -7,6 +7,8 @@ export class CreateFoodDto {
     description: string;
     @ApiProperty({example:'ly', description:'unit of the food'})
     unit: string;
+    @ApiProperty({example:'100', description:'price of the food'})
+    price: string;
     @ApiProperty({example:'https://www.google.com/image.jpg', description: 'image of the food'})
     image: string;
     @ApiProperty({example:'milk', description: 'category of the food'})
