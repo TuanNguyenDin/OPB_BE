@@ -21,7 +21,7 @@ export class OrderService {
   returnUrl: string;
 
   constructor(
-    @InjectModel('Payment') private readonly paymentModel: Model<payment>,
+    @InjectModel('payments') private readonly paymentModel: Model<payment>,
     private readonly configService: ConfigService,
     private readonly httpService: HttpService,
   ) {
