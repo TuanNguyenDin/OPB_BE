@@ -12,6 +12,7 @@ import { createPaymentURLDto } from './dtos/order.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { payment } from '../payment.entity';
+import { paymentDTO } from '../payment.dto';
 
 @Injectable()
 export class OrderService {
@@ -72,19 +73,21 @@ export class OrderService {
       .digest('hex');
 
     url.searchParams.set('vnp_SecureHash', signed);
-    const paymentStore = this.paymentModel.create({
-      amount: amount,
-      order_id: orderCreated,
-      method: 'vnpay',
-      content: message,
-      status: 'pending',
-      reference_transaction_id: orderId,
-      created_at: now.toJSDate(),
-      created_by: 'SYSTEM',
-      updated_at: now.toJSDate(),
-      updated_by: 'SYSTEM',
-    });
-    return { url: url.toString(), paymentStore: paymentStore };
+    const paymentStore = this.paymentModel.create(
+      new paymentDTO({
+        amount: amount,
+        order_id: orderCreated,
+        method: 'vnpay',
+        content: message,
+        status: 'pending',
+        reference_transaction_id: orderId,
+        created_at: now.toJSDate(),
+        created_by: 'SYSTEM',
+        updated_at: now.toJSDate(),
+        updated_by: 'SYSTEM',
+      })
+    );
+    return { url: url.toString(), paymentStore };
   }
 
   async checkReturn(query: any) {
