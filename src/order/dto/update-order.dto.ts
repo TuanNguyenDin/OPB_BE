@@ -2,7 +2,7 @@ import { PartialType } from '@nestjs/swagger';
 import { CreateOrderDto } from './create-order.dto';
 
 export class UpdateOrderDto extends PartialType(CreateOrderDto) {
-    table_count: string;
+    table_count: number;
     description: string;
     status: string;
     total_price: number;

@@ -44,4 +44,8 @@ export class OrderService {
   remove(id: string) {
     return `This action removes a #${id} order`;
   }
+
+  async findByCreatedAt(createdAt: Date) {
+    return await this.orderModel.find({ createdAt: { $gte: createdAt } }).exec();
+  }
 }

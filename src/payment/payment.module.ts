@@ -8,7 +8,7 @@ import { paymentSchema } from './payment.entity';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{name:'Payment', schema:paymentSchema},]),
+    MongooseModule.forFeature([{name:'Payment', schema:paymentSchema},{name:'paymentCard', schema:paymentSchema}]),
     ConfigModule.forRoot({ isGlobal: true, envFilePath: ['.env'] }),
     HttpModule,
     OrderModule,

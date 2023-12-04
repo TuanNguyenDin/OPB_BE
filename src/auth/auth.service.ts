@@ -5,7 +5,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
 import { auth, firebaseConfig } from '../firebaseConfig'
-import { createUserWithEmailAndPassword, sendEmailVerification, signInWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword, sendEmailVerification, signInWithEmailAndPassword, updateCurrentUser } from 'firebase/auth';
 import { JwtService } from '@nestjs/jwt';
 import { Account } from './entities/user.entities';
 
@@ -17,6 +17,7 @@ export class AuthService {
             if (userData.password.length < 6) { throw new Error("Password should be at least 6 characters") }// kiểm tra độ dài của password trả về lỗi nếu nhỏ hơn 6 kí tự
             const hashpassword = await bcrypt.hash(userData.password, 12);//mã hóa password để lưu vào database
             const userCredential = await createUserWithEmailAndPassword(auth, userData.email, userData.password);//lưu tài khoản và password vào firebase
+            updateCurrentUser(auth, userData)
             // await sendEmailVerification(auth.currentUser);//hàm gọi chức năng gửi mail xác nhận đăng kí của user
             // lưu thông tin người dùng vào database
             userData.password = hashpassword;
@@ -40,8 +41,10 @@ export class AuthService {
     }
     async login(userData) {
         try {
-            const userCredential = await signInWithEmailAndPassword(auth, userData.email, userData.password);//xác thực đăng nhập người dùng với firebase
-            const user = await this.AccountModel.findOne({ email: userData.email }).exec();//xác thực đăng nhập người dùng với database
+            //xác thực đăng nhập người dùng với database
+            let user = await this.AccountModel.findOne({ email: userData.email }).exec();
+            if (!user) {user = await this.AccountModel.findOne({ phone_number: userData.phone }).exec();}
+            const userCredential = await signInWithEmailAndPassword(auth, user.email, userData.password);//xác thực đăng nhập người dùng với firebase
             if (!user) {
                 throw new HttpException("User not found", HttpStatus.INTERNAL_SERVER_ERROR);
             }
@@ -80,6 +83,8 @@ export class AuthService {
     }
     async updateUser(user_id, userData){
       const currentUser = await this.AccountModel.findById(user_id).exec();
+      updateCurrentUser(auth, userData)
+      
       const hashpassword = await bcrypt.hash(userData.password, 12);
       if(userData.password !== currentUser.password){
         userData.password = hashpassword;
