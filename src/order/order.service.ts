@@ -46,6 +46,20 @@ export class OrderService {
   }
 
   async findByCreatedAt(createdAt: Date) {
-    return await this.orderModel.find({ createdAt: { $gte: createdAt } }).exec();
+    const orders= await this.orderModel.find({ createdAt: { $gte: createdAt } }).exec();
+    const total = orders.reduce((total, order) => total + order.total_price, 0);
+    const numberOfOrders = orders.length;
+    const numberOfOrdersWithStatusDone = orders.filter(order => order.status === 'done').length;
+    const numberOfOrdersWithStatusCanceled = orders.filter(order => order.status === 'canceled').length;
+    const totalPriceOfOrdersWithStatusDone = orders.filter(order => order.status === 'done').reduce((total, order) => total + order.total_price, 0);
+    const result = {
+    numberOfOrders:numberOfOrders,
+    done:numberOfOrdersWithStatusDone,
+    cancel:numberOfOrdersWithStatusCanceled,
+    totalDone:totalPriceOfOrdersWithStatusDone,
+    totalAll: total,
+    Detail:orders      
+    };
+    return result;
   }
 }

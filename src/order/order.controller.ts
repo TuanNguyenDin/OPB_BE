@@ -42,4 +42,10 @@ export class OrderController {
     return this.orderService.remove(id);
   }
 
+  @Get('report/:date')
+  @ApiTags('Report')
+  @ApiOperation({ summary: 'Get report by date, return all orders form a date to now' })
+  getReport(@Param('date') createdAt: string) {
+    return this.orderService.findByCreatedAt(new Date(createdAt));
+  }
 }

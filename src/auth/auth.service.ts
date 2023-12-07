@@ -43,7 +43,7 @@ export class AuthService {
         try {
             //xác thực đăng nhập người dùng với database
             let user = await this.AccountModel.findOne({ email: userData.email }).exec();
-            if (!user) {user = await this.AccountModel.findOne({ phone_number: userData.phone }).exec();}
+            if (!user) {user = await this.AccountModel.findOne({ phone_number: userData.email }).exec();}
             const userCredential = await signInWithEmailAndPassword(auth, user.email, userData.password);//xác thực đăng nhập người dùng với firebase
             if (!user) {
                 throw new HttpException("User not found", HttpStatus.INTERNAL_SERVER_ERROR);
