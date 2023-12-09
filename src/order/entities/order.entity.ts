@@ -1,10 +1,11 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { HydratedDocument } from "mongoose";
+import mongoose, { HydratedDocument } from "mongoose";
+import { Account } from "src/auth/entities/user.entities";
 
 @Schema({timestamps: true})
 export class Order {
-    @Prop({})
-    customer_id: string;
+    @Prop({type: mongoose.Schema.Types.ObjectId, ref: 'account'})
+    customer: Account;
     @Prop({})
     restaurant_id: string;
     @Prop({})
