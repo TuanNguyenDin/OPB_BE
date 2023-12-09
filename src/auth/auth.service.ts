@@ -5,7 +5,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
 import { auth, firebaseConfig } from '../firebaseConfig'
-import { createUserWithEmailAndPassword, sendEmailVerification, signInWithEmailAndPassword, updateCurrentUser } from 'firebase/auth';
+import { createUserWithEmailAndPassword, sendEmailVerification, signInWithEmailAndPassword, signOut, updateCurrentUser } from 'firebase/auth';
 import { JwtService } from '@nestjs/jwt';
 import { Account } from './entities/user.entities';
 
@@ -42,12 +42,16 @@ export class AuthService {
     async login(userData) {
         try {
             //xác thực đăng nhập người dùng với database
-            let user = await this.AccountModel.findOne({ email: userData.email }).exec();
-            if (!user) {user = await this.AccountModel.findOne({ phone_number: userData.email }).exec();}
-            const userCredential = await signInWithEmailAndPassword(auth, user.email, userData.password);//xác thực đăng nhập người dùng với firebase
+            const user = await this.AccountModel.findOne({
+              $or: [
+                { email: userData.email },
+                { phone_number: userData.email }
+              ]
+            }).exec();
             if (!user) {
                 throw new HttpException("User not found", HttpStatus.INTERNAL_SERVER_ERROR);
             }
+            const userCredential = await signInWithEmailAndPassword(auth, user.email, userData.password);//xác thực đăng nhập người dùng với firebase
             const jwt = await this.jwtService.signAsync({ id: user._id }, { secret: process.env.JWT_SECRET, expiresIn: process.env.EXPIRES_IN_SECONDS });// tạo jwt token
             return {
                 user,
@@ -75,6 +79,9 @@ export class AuthService {
             jwt
         }
     }
+    async logout() {
+      return await signOut(auth);
+    }
     async findUser(user_id) {
       return await this.AccountModel.findById(user_id).exec();
     }
@@ -83,13 +90,14 @@ export class AuthService {
     }
     async updateUser(user_id, userData){
       const currentUser = await this.AccountModel.findById(user_id).exec();
-      updateCurrentUser(auth, userData)
-      
-      const hashpassword = await bcrypt.hash(userData.password, 12);
-      if(userData.password !== currentUser.password){
-        userData.password = hashpassword;
-      }
+      updateCurrentUser(auth, userData);
       return await this.AccountModel.findByIdAndUpdate(user_id, userData, {new: true}).exec();
+    }
+    async updatePassword(user_id, userData){
+      const currentUser = await this.AccountModel.findById(user_id).exec();
+      const hashpassword = await bcrypt.hash(userData.password, 12);
+      updateCurrentUser(auth, userData);
+      return await this.AccountModel.findByIdAndUpdate(user_id, {password: hashpassword}, {new: true}).exec();
     }
     async deleteUser(user_id){
       /* return await this.AccountModel.findByIdAndDelete(user_id).exec(); */
