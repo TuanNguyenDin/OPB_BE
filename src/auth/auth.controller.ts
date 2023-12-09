@@ -3,6 +3,7 @@ import { AuthService, FirebaseService } from './auth.service';
 import { ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CreateAccountDto } from './dto/create-user.dto';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
+import { UpdatePasswordDto } from './dto/update-user.dto';
 
 @Controller('common')
 export class AuthController {
@@ -28,6 +29,14 @@ export class AuthController {
         @Body() data: CreateAccountDto
     ) {
         return await this.authService.login(data);
+    }
+
+    @Post('password/reset/:id')
+    @HttpCode(200)
+    @ApiTags('Auth')
+    @ApiOperation({ summary: 'user password reset' })
+    async resetPassword(@Param('id') id: string, @Body() data: UpdatePasswordDto) {
+        return await this.authService.updatePassword(id, data.oldPassword, data.newPassword);
     }
 
 

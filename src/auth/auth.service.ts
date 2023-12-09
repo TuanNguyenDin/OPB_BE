@@ -93,10 +93,13 @@ export class AuthService {
       updateCurrentUser(auth, userData);
       return await this.AccountModel.findByIdAndUpdate(user_id, userData, {new: true}).exec();
     }
-    async updatePassword(user_id, userData){
+    async updatePassword(user_id, oldPassword, newPassword){
       const currentUser = await this.AccountModel.findById(user_id).exec();
-      const hashpassword = await bcrypt.hash(userData.password, 12);
-      updateCurrentUser(auth, userData);
+      const isMatch = await bcrypt.compare(oldPassword, currentUser.password);
+      if(!isMatch){
+        throw new HttpException("Old password is not correct", HttpStatus.INTERNAL_SERVER_ERROR);
+      }
+      const hashpassword = await bcrypt.hash(newPassword, 12);
       return await this.AccountModel.findByIdAndUpdate(user_id, {password: hashpassword}, {new: true}).exec();
     }
     async deleteUser(user_id){
