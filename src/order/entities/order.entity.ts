@@ -4,9 +4,9 @@ import { Account } from "src/auth/entities/user.entities";
 
 @Schema({timestamps: true})
 export class Order {
-    @Prop({type: mongoose.Schema.Types.ObjectId, ref: 'account'})
+    @Prop({type: mongoose.Schema.Types.ObjectId, ref: 'accounts'})
     customer_id: string;
-    @Prop({type: mongoose.Schema.Types.ObjectId, ref: 'restaurant'})
+    @Prop({type: mongoose.Schema.Types.ObjectId, ref: 'restaurants'})
     restaurant_id: string;
     @Prop({})
     table_count: string;
