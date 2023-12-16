@@ -88,10 +88,15 @@ $ npm install
 ##  Set up environment variables
 
 Create .env file and add appropriate variables in order to use the app.
+Create account vnpay to get VNP_HASH_SECRET, VNP_TMNCODE. [here](https://sandbox.vnpayment.vn/devreg)
 ```bash
 DATA_BASE=<your database url here>
 JWT_SECRET=<set up your secret key>
 EXPIRES_IN_SECONDS= <jwt uptime>
+
+VNP_TMNCODE=<VNPAY TMN CODE> 
+VNP_HASH_SECRET=<VNP_HASH_SECRET CODE>
+VNP_RETURN_URL=<Your url return>
 ```
 
 ## Running the app
