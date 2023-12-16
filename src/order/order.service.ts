@@ -27,7 +27,7 @@ export class OrderService {
   }
 
   async findAll() {
-    return await this.orderModel.find().exec();
+    return await this.orderModel.find().populate('accounts').populate('restaurants').exec();
   }
 
   async findOne(id: string) {
