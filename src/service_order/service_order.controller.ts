@@ -26,6 +26,12 @@ export class ServiceOrderController {
   findOne(@Param('id') id: string) {
     return this.serviceOrderService.findOne(id);
   }
+  
+  @Get('order/:id')
+  @ApiOperation({summary: 'Finds a service order by order id'})
+  findbyOrderId(@Param('id') id: string) {
+    return this.serviceOrderService.findByOrderId(id);
+  }
 
   @Patch(':id')
   @ApiOperation({summary: 'Updates a service order'})

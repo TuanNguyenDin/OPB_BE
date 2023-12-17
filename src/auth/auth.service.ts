@@ -5,7 +5,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
 import { auth, firebaseConfig } from '../firebaseConfig'
-import { createUserWithEmailAndPassword, sendEmailVerification, signInWithEmailAndPassword, signOut, updateCurrentUser } from 'firebase/auth';
+import { createUserWithEmailAndPassword, sendEmailVerification, sendPasswordResetEmail, signInWithEmailAndPassword, signOut, updateCurrentUser, updatePassword } from 'firebase/auth';
 import { JwtService } from '@nestjs/jwt';
 import { Account } from './entities/user.entities';
 
@@ -100,7 +100,24 @@ export class AuthService {
         throw new HttpException("Old password is not correct", HttpStatus.INTERNAL_SERVER_ERROR);
       }
       const hashpassword = await bcrypt.hash(newPassword, 12);
+      updatePassword(auth.currentUser, newPassword);
+      
       return await this.AccountModel.findByIdAndUpdate(user_id, {password: hashpassword}, {new: true}).exec();
+    }
+    async forgotPasswordSendmail(email){
+      const user = await this.AccountModel.findOne({
+        $or: [
+          { email: email },
+          { phone_number: email }
+        ]
+      }).exec();
+      if(!user){
+        throw new HttpException("User not found", HttpStatus.NOT_FOUND);
+      }else{
+        const resetToken = await createUserWithEmailAndPassword(auth, user.email, user.password);
+        await sendPasswordResetEmail(auth, user.email, {url: "https://opb-be.vercel.app/common/password/forgot/"} )
+        return resetToken;
+      }
     }
     async deleteUser(user_id){
       /* return await this.AccountModel.findByIdAndDelete(user_id).exec(); */

@@ -27,6 +27,12 @@ export class FoodOrderController {
     return this.foodOrderService.findOne(id);
   }
 
+  @Get('order/:id')
+  @ApiOperation({ summary: 'Finds a food order by order id' })
+  findbyOrderId(@Param('id') id: string) {
+    return this.foodOrderService.findByOrderId(id);
+  }
+
   @Patch(':id')
   @ApiOperation({ summary: 'Updates a food order' })
   update(@Param('id') id: string, @Body() updateFoodOrderDto: UpdateFoodOrderDto) {

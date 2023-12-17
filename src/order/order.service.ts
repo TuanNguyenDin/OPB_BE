@@ -31,7 +31,7 @@ export class OrderService {
   }
 
   async findOne(id: string) {
-    return await this.orderModel.findById(id).exec();
+    return await this.orderModel.findById(id).populate('customer_id').populate('restaurant_id').exec();
   }
 
   async update(id: string, updateOrderDto: UpdateOrderDto, useID: string) {
@@ -46,7 +46,7 @@ export class OrderService {
   }
 
   async findByCreatedAt(createdAt: Date) {
-    const orders= await this.orderModel.find({ createdAt: { $gte: createdAt } }).exec();
+    const orders= await this.orderModel.find({ createdAt: { $gte: createdAt } }).populate('customer_id').populate('restaurant_id').exec();
     const total = orders.reduce((total, order) => total + order.total_price, 0);
     const numberOfOrders = orders.length;
     const numberOfOrdersWithStatusDone = orders.filter(order => order.status === 'done').length;

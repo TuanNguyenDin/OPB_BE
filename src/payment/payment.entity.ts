@@ -24,6 +24,19 @@ export class payment{
     @Prop({})
     updated_by: string;
 }
+@Schema({timestamps: true})
+export class PaymentCard{
+    @Prop({})
+    number: string;
+    @Prop({})
+    holder: string;
+    @Prop({})
+    expiration: string;
+    @Prop({})
+    logo: string;
+}
 
 export type paymentDocument = HydratedDocument<payment>;
 export const paymentSchema = SchemaFactory.createForClass(payment);
+export type paymentCardDocument = HydratedDocument<PaymentCard>;
+export const paymentCardSchema = SchemaFactory.createForClass(PaymentCard);
