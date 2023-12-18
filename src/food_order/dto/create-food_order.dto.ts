@@ -11,4 +11,6 @@ export class CreateFoodOrderDto {
     price: number;
     @ApiProperty({example: '1', description: 'The description of the order'})
     description: string;
+    @ApiProperty({example: '123456', description: 'The id of the who created this order'})
+    created_by: string;
 }
