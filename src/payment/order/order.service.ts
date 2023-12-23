@@ -245,13 +245,6 @@ export class OrderService {
           };
       }
     }
-    return {
-      transactionId: transaction_id,
-      transactionInfo: transaction_info,
-      RspCode: '99',
-      message: 'Giao dich thất bại',
-      status: false,
-    };
   }
 
   checkIpn(query: Record<string, any>) {
