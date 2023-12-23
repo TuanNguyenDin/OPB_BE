@@ -86,7 +86,7 @@ export class OrderService {
         updated_at: now.toJSDate(),
         updated_by: 'SYSTEM',
       })
-      this.paymentModel.create(paymentStore);
+    this.paymentModel.create(paymentStore);
     return { url: url.toString(), paymentStore: paymentStore };
   }
 
@@ -107,11 +107,13 @@ export class OrderService {
     const signed = hmac.update(Buffer.from(newParams, 'utf-8')).digest('hex');
     let paymentRecord = await this.paymentModel.findOne({ reference_transaction_id: transaction_id });
     if (paymentRecord) {
-      paymentRecord.status = 'completed';
-      paymentRecord.updated_at = DateTime.now().toJSDate();
-      paymentRecord.updated_by = 'SYSTEM';
+      await this.paymentModel.findByIdAndUpdate(paymentRecord._id, {
+        status: 'completed',
+        updated_at: DateTime.now().toJSDate(),
+        updated_by: 'SYSTEM',
+      })
     } else {
-      paymentRecord = new this.paymentModel({
+      await this.paymentModel.create({
         amount: 0,
         order_id: '',
         method: 'vnpay',
@@ -124,7 +126,6 @@ export class OrderService {
         updated_by: 'SYSTEM',
       });
     }
-    await paymentRecord.save();
     if (signed === secureHash) {
       switch (responseCode) {
         case '00':
