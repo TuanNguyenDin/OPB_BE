@@ -18,6 +18,8 @@ import { join } from 'path';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { PaymentModule } from './payment/payment.module';
 import { ComboMenuModule } from './combo_menu/combo_menu.module';
+import { FeedbackModule } from './feedback/feedback.module';
+import { NotifyModule } from './notify/notify.module';
 
 @Module({
   imports: [ConfigModule.forRoot({
@@ -40,7 +42,9 @@ import { ComboMenuModule } from './combo_menu/combo_menu.module';
     AddressModule,
     PaymentModule,
     HttpModule,
-    ComboMenuModule
+    ComboMenuModule,
+    FeedbackModule,
+    NotifyModule
   ],
   controllers: [AppController],
   providers: [AppService],
