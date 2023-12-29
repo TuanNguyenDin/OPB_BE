@@ -5,7 +5,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
 import { auth, firebaseConfig } from '../firebaseConfig'
-import { createUserWithEmailAndPassword, sendEmailVerification, sendPasswordResetEmail, signInWithEmailAndPassword, signOut, updateCurrentUser, updatePassword } from 'firebase/auth';
+import { IdTokenResult, createUserWithEmailAndPassword, sendEmailVerification, sendPasswordResetEmail, signInWithEmailAndPassword, signOut, updateCurrentUser, updatePassword } from 'firebase/auth';
 import { JwtService } from '@nestjs/jwt';
 import { Account } from './entities/user.entities';
 
@@ -88,21 +88,20 @@ export class AuthService {
     async findAll(){
       return await this.AccountModel.find().exec();
     }
-    async updateUser(user_id, userData){
-      const currentUser = await this.AccountModel.findById(user_id).exec();
-      updateCurrentUser(auth, userData);
-      return await this.AccountModel.findByIdAndUpdate(user_id, userData, {new: true}).exec();
+    async updateUser(user_id, userData) {
+      const user = await this.AccountModel.findById(user_id).exec();
+      return await this.AccountModel.findByIdAndUpdate(user_id, userData, { new: true }).exec();
     }
-    async updatePassword(user_id, oldPassword, newPassword){
+    async updatePassword(user_id, oldPassword, newPassword) {
       const currentUser = await this.AccountModel.findById(user_id).exec();
       const isMatch = await bcrypt.compare(oldPassword, currentUser.password);
-      if(!isMatch){
+      if (!isMatch) {
         throw new HttpException("Old password is not correct", HttpStatus.INTERNAL_SERVER_ERROR);
       }
       const hashpassword = await bcrypt.hash(newPassword, 12);
-      updatePassword(auth.currentUser, newPassword);
-      
-      return await this.AccountModel.findByIdAndUpdate(user_id, {password: hashpassword}, {new: true}).exec();
+      await updatePassword(auth.currentUser, newPassword);
+
+      return await this.AccountModel.findByIdAndUpdate(user_id, { password: hashpassword }, { new: true }).exec();
     }
     async forgotPasswordSendmail(email){
       const user = await this.AccountModel.findOne({
