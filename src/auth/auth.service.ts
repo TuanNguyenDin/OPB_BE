@@ -17,7 +17,7 @@ export class AuthService {
             if (userData.password.length < 6) { throw new Error("Password should be at least 6 characters") }// kiểm tra độ dài của password trả về lỗi nếu nhỏ hơn 6 kí tự
             const hashpassword = await bcrypt.hash(userData.password, 12);//mã hóa password để lưu vào database
             const userCredential = await createUserWithEmailAndPassword(auth, userData.email, userData.password);//lưu tài khoản và password vào firebase
-            updateCurrentUser(auth, userData)
+            // updateCurrentUser(auth, userData)
             // await sendEmailVerification(auth.currentUser);//hàm gọi chức năng gửi mail xác nhận đăng kí của user
             // lưu thông tin người dùng vào database
             userData.password = hashpassword;
