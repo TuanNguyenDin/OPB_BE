@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, Param, Post, UploadedFile, UploadedFiles, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, Param, Patch, Post, UploadedFile, UploadedFiles, UseInterceptors } from '@nestjs/common';
 import { AuthService, FirebaseService } from './auth.service';
 import { ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CreateAccountDto } from './dto/create-user.dto';
@@ -105,7 +105,7 @@ export class AuthController {
     @ApiTags('User')
     async getUser(@Param('id') id: string) { return await this.authService.findUser(id) }
 
-    @Post('user/:id')
+    @Patch('user/:id')
     @HttpCode(200)
     @ApiTags('User')
     @ApiOperation({ summary: 'Update user by id' })
