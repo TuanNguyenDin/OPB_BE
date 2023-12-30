@@ -23,15 +23,15 @@ export class FoodOrderService {
   }
 
   async findAll() {
-    return await this.foodOrderModel.find().populate('food_id').populate('order_id').populate('created_by').exec();
+    return await this.foodOrderModel.find().populate('food_id').populate('order_id').exec();
   }
 
   async findOne(id: string) {
-    return await this.foodOrderModel.findById(id).populate('food_id').populate('order_id').populate('created_by').exec();
+    return await this.foodOrderModel.findById(id).populate('food_id').populate('order_id').exec();
   }
 
   async findByOrderId(id: string) {
-    return await this.foodOrderModel.find({order_id: id}).populate('food_id').populate('order_id').populate('created_by').exec();
+    return await this.foodOrderModel.find({order_id: id}).populate('food_id').populate('order_id').exec();
   }
 
   async update(id: string, updateFoodOrderDto: UpdateFoodOrderDto) {
