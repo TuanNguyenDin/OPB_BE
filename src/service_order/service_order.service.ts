@@ -17,14 +17,14 @@ export class ServiceOrderService {
   }
 
   async findAll() {
-    return await this.serviceOderModel.find().populate('order_id').populate('service_id').exec();
+    return await this.serviceOderModel.find().populate('order_id').populate('service_id').populate('created_by').exec();
   }
 
   async findOne(id: string) {
-    return (await this.serviceOderModel.findById(id)).populated('order_id').populate('service_id').exec();
+    return (await this.serviceOderModel.findById(id)).populated('order_id').populate('service_id').populate('created_by').exec();
   }
   async findByOrderId(id: string) {
-    return await this.serviceOderModel.find({order_id: id}).populate('order_id').populate('service_id').exec();
+    return await this.serviceOderModel.find({order_id: id}).populate('order_id').populate('service_id').populate('created_by').exec();
   }
 
   async update(id: string, updateServiceOrderDto: UpdateServiceOrderDto) {
