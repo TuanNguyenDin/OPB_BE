@@ -15,6 +15,7 @@ import { OrderService } from './order.service';
 import { type Request, type Response } from 'express';
 import { createPaymentURLDto } from './dtos/order.dto';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Order } from 'src/order/entities/order.entity';
 
 @Controller('vnpay/order')
 @ApiTags('Payment')
@@ -121,5 +122,32 @@ export class OrderController {
       typeof ipAddr === 'string' ? ipAddr : ipAddr[0],
     );
     return response;
+  }
+
+  @Post("/refund/:orderId")
+  @ApiOperation({ summary: 'Refund payment' })
+  async refund(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Body() order: Order,
+    @Param('orderId') orderId: string,
+  ) {
+    const ipAddr = req.headers['x-forwarded-for'] || '127.0.0.1';
+    const response = await this.orderService.refund(
+      orderId, order.prepaid,
+      typeof ipAddr === 'string' ? ipAddr : ipAddr[0],
+    );
+  }
+
+  @Get('find_payment/:orderId')
+  @ApiOperation({ summary: 'Find payment by order ID' })
+  async findPaymentByOrderId(
+    @Param('orderId') orderId: string,
+  ) {
+    const payment = await this.orderService.findPaymentByOrderId(orderId);
+    return{
+      status: payment.length,
+      data: payment
+    }
   }
 }

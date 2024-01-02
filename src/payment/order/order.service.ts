@@ -363,4 +363,57 @@ export class OrderService {
     );
     return response.data;
   }
+  async refund(orderId: string, amount: number, ip: string): Promise<boolean> {
+    const vnpUrl = 'https://sandbox.vnpayment.vn/paymentv2/vnprest';
+    const vnpVersion = '2.0.0';
+    const vnpCommand = 'refund';
+    const vnpTmnCode = this.tmnCode;
+    const vnpHashSecret = this.hashSecret;
+
+    const vnpParams = {
+      vnp_Version: vnpVersion,
+      vnp_Command: vnpCommand,
+      vnp_TmnCode: vnpTmnCode,
+      vnp_Amount: amount, // Convert amount to cents
+      vnp_OrderInfo: `Refund for order ${orderId}`,
+      vnp_OrderType: '',
+      vnp_TransactionId: orderId,
+      vnp_IpAddr: ip, // Provide the IP address of the server making the request
+      vnp_CreateDate: DateTime.utc().toFormat('yyyyMMddHHmmss'),
+    };
+
+    const vnpSecureHash = createHmac('SHA512', vnpHashSecret)
+      .update(Object.values(vnpParams).join(''))
+      .digest('hex');
+
+    const vnpRequestBody = {
+      ...vnpParams,
+      vnp_SecureHash: vnpSecureHash,
+    };
+
+    try {
+      const response = await lastValueFrom(
+        this.httpService.post(`${vnpUrl}/vnpayrefund`, vnpRequestBody)
+      );
+
+      if (response.data && response.data.code === '00') {
+        return true; // Refund successful
+      } else {
+        return false; // Refund failed
+      }
+    } catch (error) {
+      console.error('Error occurred during refund:', error);
+      return false; // Refund failed
+    }
+  }
+async findPaymentByOrderId(orderId: string): Promise<paymentDTO[] | null> {
+  try {
+    const payment = await this.paymentModel.find({ order_id: orderId }).exec();
+    return payment as paymentDTO[];
+  } catch (error) {
+    console.error('Error occurred while finding payment by order_id:', error);
+    return null;
+  }
+}
+
 }
