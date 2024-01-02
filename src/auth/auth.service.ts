@@ -11,117 +11,132 @@ import { Account } from './entities/user.entities';
 
 @Injectable()
 export class AuthService {
-    constructor(@InjectModel('Account') private AccountModel: Model<Account>, private jwtService: JwtService) { }
-    async register(userData) {
-        try {
-            if (userData.password.length < 6) { throw new Error("Password should be at least 6 characters") }// kiểm tra độ dài của password trả về lỗi nếu nhỏ hơn 6 kí tự
-            const hashpassword = await bcrypt.hash(userData.password, 12);//mã hóa password để lưu vào database
-            const userCredential = await createUserWithEmailAndPassword(auth, userData.email, userData.password);//lưu tài khoản và password vào firebase
-            // updateCurrentUser(auth, userData)
-            // await sendEmailVerification(auth.currentUser);//hàm gọi chức năng gửi mail xác nhận đăng kí của user
-            // lưu thông tin người dùng vào database
-            userData.password = hashpassword;
-            const user = await this.AccountModel.create(userData);
-            return user;
-        } catch (err) {
-            //lỗi được firebase trả về 
-            switch (err.code) {
-                case "auth/email-already-in-use":
-                    throw new HttpException("Email already in use", HttpStatus.INTERNAL_SERVER_ERROR);//người dùng đã tồn tại
-                case "auth/invalid-email":
-                    throw new HttpException("Invalid email", HttpStatus.INTERNAL_SERVER_ERROR);//email sai định dạng
-                case "auth/weak-password":
-                    throw new HttpException("Password should be at least 6 characters", HttpStatus.INTERNAL_SERVER_ERROR);// mật khẩu yếu
-                case "auth/operation-not-allowed":
-                    throw new HttpException("Operation not allowed, please contact support", HttpStatus.INTERNAL_SERVER_ERROR);//server firebase lỗi
-                case "auth/too-many-requests":
-                    throw new HttpException("Too many requests, please try again later.", HttpStatus.INTERNAL_SERVER_ERROR);//quá nhiều request
-            }
-        }
-    }
-    async login(userData) {
-        try {
-            //xác thực đăng nhập người dùng với database
-            const user = await this.AccountModel.findOne({
-              $or: [
-                { email: userData.email },
-                { phone_number: userData.email }
-              ]
-            }).exec();
-            if (!user) {
-                throw new HttpException("User not found", HttpStatus.INTERNAL_SERVER_ERROR);
-            }
-            const userCredential = await signInWithEmailAndPassword(auth, user.email, userData.password);//xác thực đăng nhập người dùng với firebase
-            const jwt = await this.jwtService.signAsync({ id: user._id }, { secret: process.env.JWT_SECRET, expiresIn: process.env.EXPIRES_IN_SECONDS });// tạo jwt token
-            return {
-                user,
-                jwt
-            }
-        } catch (err) {
-            //lỗi được firebase trả về
-            switch (err.code) {
-                case "auth/invalid-login-credentials":
-                    throw new HttpException("Invalid password", HttpStatus.INTERNAL_SERVER_ERROR);//sai password
-                case "auth/user-not-found":
-                    throw new HttpException("User not found", HttpStatus.INTERNAL_SERVER_ERROR);//không tìm thấy người dùng
-                case "auth/too-many-requests":
-                    throw new HttpException("Too many requests, please try again later.", HttpStatus.INTERNAL_SERVER_ERROR);
-                default:
-                    throw err;
-            }
-        }
-    }
-    //tạo lại và cung cấp token mới cho người dùng(chưa có router)
-    async refreshToken(user) {
-        const jwt = await this.jwtService.signAsync({ id: user._id });
-        return {
-            user,
-            jwt
-        }
-    }
-    async logout() {
-      return await signOut(auth);
-    }
-    async findUser(user_id) {
-      return await this.AccountModel.findById(user_id).exec();
-    }
-    async findAll(){
-      return await this.AccountModel.find().exec();
-    }
-    async updateUser(user_id, userData) {
-      const user = await this.AccountModel.findById(user_id).exec();
-      return await this.AccountModel.findByIdAndUpdate(user_id, userData, { new: true }).exec();
-    }
-    async updatePassword(user_id, oldPassword, newPassword) {
-      const currentUser = await this.AccountModel.findById(user_id).exec();
-      const isMatch = await bcrypt.compare(oldPassword, currentUser.password);
-      if (!isMatch) {
-        throw new HttpException("Old password is not correct", HttpStatus.INTERNAL_SERVER_ERROR);
-      }
-      const hashpassword = await bcrypt.hash(newPassword, 12);
-      await updatePassword(auth.currentUser, newPassword);
+  constructor(@InjectModel('Account') private AccountModel: Model<Account>, private jwtService: JwtService) { }
+  async register(userData) {
+    const userExist = await this.AccountModel.findOne({
+      $or: [
+        { email: userData.email },
+        { phone_number: userData.email }
+      ]
+    }).exec();
+    console.log(userExist);
 
-      return await this.AccountModel.findByIdAndUpdate(user_id, { password: hashpassword }, { new: true }).exec();
+    if (userExist) {
+      throw new HttpException("User already exists", HttpStatus.INTERNAL_SERVER_ERROR);
     }
-    async forgotPasswordSendmail(email){
+
+    try {
+      if (userData.password.length < 6) {
+        throw new Error("Password should be at least 6 characters");
+      }
+
+      const hashpassword = await bcrypt.hash(userData.password, 12);
+      // const userCredential = await createUserWithEmailAndPassword(auth, userData.email, userData.password);//lưu tài khoản và password vào firebase
+      // updateCurrentUser(auth, userData)
+      // await sendEmailVerification(auth.currentUser);//hàm gọi chức năng gửi mail xác nhận đăng kí của user
+      // lưu thông tin người dùng vào database
+      userData.password = hashpassword;
+      const user = await this.AccountModel.create(userData);
+      return user;
+    } catch (err) {
+      //lỗi được firebase trả về 
+      switch (err.code) {
+        case "auth/email-already-in-use":
+          throw new HttpException("Email already in use", HttpStatus.INTERNAL_SERVER_ERROR);//người dùng đã tồn tại
+        case "auth/invalid-email":
+          throw new HttpException("Invalid email", HttpStatus.INTERNAL_SERVER_ERROR);//email sai định dạng
+        case "auth/weak-password":
+          throw new HttpException("Password should be at least 6 characters", HttpStatus.INTERNAL_SERVER_ERROR);// mật khẩu yếu
+        case "auth/operation-not-allowed":
+          throw new HttpException("Operation not allowed, please contact support", HttpStatus.INTERNAL_SERVER_ERROR);//server firebase lỗi
+        case "auth/too-many-requests":
+          throw new HttpException("Too many requests, please try again later.", HttpStatus.INTERNAL_SERVER_ERROR);//quá nhiều request
+      }
+    }
+  }
+  async login(userData) {
+    try {
+      //xác thực đăng nhập người dùng với database
       const user = await this.AccountModel.findOne({
         $or: [
-          { email: email },
-          { phone_number: email }
+          { email: userData.email },
+          { phone_number: userData.email }
         ]
       }).exec();
-      if(!user){
-        throw new HttpException("User not found", HttpStatus.NOT_FOUND);
-      }else{
-        const resetToken = await createUserWithEmailAndPassword(auth, user.email, user.password);
-        await sendPasswordResetEmail(auth, user.email, {url: "https://opb-be.vercel.app/common/password/forgot/"} )
-        return resetToken;
+      if (!user) {
+        throw new HttpException("User not found", HttpStatus.INTERNAL_SERVER_ERROR);
+      }
+      const userCredential = await signInWithEmailAndPassword(auth, user.email, userData.password);//xác thực đăng nhập người dùng với firebase
+      const jwt = await this.jwtService.signAsync({ id: user._id }, { secret: process.env.JWT_SECRET, expiresIn: process.env.EXPIRES_IN_SECONDS });// tạo jwt token
+      return {
+        user,
+        jwt
+      }
+    } catch (err) {
+      //lỗi được firebase trả về
+      switch (err.code) {
+        case "auth/invalid-login-credentials":
+          throw new HttpException("Invalid password", HttpStatus.INTERNAL_SERVER_ERROR);//sai password
+        case "auth/user-not-found":
+          throw new HttpException("User not found", HttpStatus.INTERNAL_SERVER_ERROR);//không tìm thấy người dùng
+        case "auth/too-many-requests":
+          throw new HttpException("Too many requests, please try again later.", HttpStatus.INTERNAL_SERVER_ERROR);
+        default:
+          throw err;
       }
     }
-    async deleteUser(user_id){
-      /* return await this.AccountModel.findByIdAndDelete(user_id).exec(); */
-      return await this.AccountModel.findByIdAndUpdate(user_id, {status: 'deactivated'}, {new: true}).exec();
+  }
+  //tạo lại và cung cấp token mới cho người dùng(chưa có router)
+  async refreshToken(user) {
+    const jwt = await this.jwtService.signAsync({ id: user._id });
+    return {
+      user,
+      jwt
     }
+  }
+  async logout() {
+    return await signOut(auth);
+  }
+  async findUser(user_id) {
+    return await this.AccountModel.findById(user_id).exec();
+  }
+  async findAll() {
+    return await this.AccountModel.find().exec();
+  }
+  async updateUser(user_id, userData) {
+    const user = await this.AccountModel.findById(user_id).exec();
+    return await this.AccountModel.findByIdAndUpdate(user_id, userData, { new: true }).exec();
+  }
+  async updatePassword(user_id, oldPassword, newPassword) {
+    const currentUser = await this.AccountModel.findById(user_id).exec();
+    const isMatch = await bcrypt.compare(oldPassword, currentUser.password);
+    if (!isMatch) {
+      throw new HttpException("Old password is not correct", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+    const hashpassword = await bcrypt.hash(newPassword, 12);
+    await updatePassword(auth.currentUser, newPassword);
+
+    return await this.AccountModel.findByIdAndUpdate(user_id, { password: hashpassword }, { new: true }).exec();
+  }
+  async forgotPasswordSendmail(email) {
+    const user = await this.AccountModel.findOne({
+      $or: [
+        { email: email },
+        { phone_number: email }
+      ]
+    }).exec();
+    if (!user) {
+      throw new HttpException("User not found", HttpStatus.NOT_FOUND);
+    } else {
+      const resetToken = await createUserWithEmailAndPassword(auth, user.email, user.password);
+      await sendPasswordResetEmail(auth, user.email, { url: "https://opb-be.vercel.app/common/password/forgot/" })
+      return resetToken;
+    }
+  }
+  async deleteUser(user_id) {
+    /* return await this.AccountModel.findByIdAndDelete(user_id).exec(); */
+    return await this.AccountModel.findByIdAndUpdate(user_id, { status: 'deactivated' }, { new: true }).exec();
+  }
 }
 
 @Injectable()
@@ -142,7 +157,7 @@ export class FirebaseService {
   }
 
   async uploadFile(folder: string, file: Express.Multer.File) {
-    
+
     try {
       const key = `${folder}/${file.originalname}`;
 
@@ -200,7 +215,7 @@ export class FirebaseService {
       return publicUrl[0];
     } catch (error) {
       console.log(error);
-    throw new HttpException('Failed to get the image from Firebase', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException('Failed to get the image from Firebase', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
