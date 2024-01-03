@@ -100,9 +100,9 @@ export class OrderController {
   @Get('vnpay_return')
   @ApiOperation({ summary: 'Check return from vnpay, auto run after do payment, default return is code 99 transaction fail' })
   @Render('payment-return') // Specify the name of the Pug template to render
-  vnpayReturn(@Query() query) {
+  vnpayReturn(@Query() query, @Res() res: Response) {
     const result = this.orderService.checkReturn(query);
-    return result;
+    return res.render('payment-return', { result });
   }
 
   @Get('vnpay_ipn')
