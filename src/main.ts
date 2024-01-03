@@ -5,7 +5,6 @@ import { writeFileSync } from 'fs';
 import { join, resolve } from 'path';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { json, urlencoded } from 'express';
-import { PugAdapter } from '@nestjs-modules/mailer/dist/adapters/pug.adapter';
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     cors: true,
@@ -18,7 +17,6 @@ async function bootstrap() {
   app.useStaticAssets(join(__dirname, '..', 'public'));
   app.setBaseViewsDir(join(__dirname, '..', 'views'));
   app.setViewEngine('pug');
-  app.engine('pug', new PugAdapter());
 
   // swagger setup
   const config = new DocumentBuilder()
