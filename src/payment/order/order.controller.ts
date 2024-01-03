@@ -145,9 +145,10 @@ export class OrderController {
     @Param('orderId') orderId: string,
   ) {
     const payment = await this.orderService.findPaymentByOrderId(orderId);
-    return{
-      status: payment.length,
+    const completedPayments = payment.filter(p => p.status === "completed");
+    return {
+      statusCode: completedPayments.length,
       data: payment
-    }
+    };
   }
 }
