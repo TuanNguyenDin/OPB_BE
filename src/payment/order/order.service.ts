@@ -117,7 +117,7 @@ export class OrderService {
         amount: 0,
         order_id: '',
         method: 'vnpay',
-        content: 'Không thể tìm thấy đơn hàng của bạn, Hãy liên hệ admin để được giải quyết ngay lập tức ' + transaction_info,
+        content: 'Không thể tìm thấy đơn hàng của bạn, Hãy liên hệ người quản lý để được giải quyết ngay lập tức ' + transaction_info,
         status: 'completed',
         reference_transaction_id: transaction_id,
         created_at: DateTime.now().toJSDate(),
@@ -232,7 +232,7 @@ export class OrderService {
             transactionInfo: transaction_info,
             RspCode: '79',
             message:
-              'KH nhập sai mật khẩu thanh toán quá số lần quy định. Xin quý khách vui lòng thực hiện lại giao dịc',
+              'Nhập sai mật khẩu thanh toán quá số lần quy định. Xin quý khách vui lòng thực hiện lại giao dịch',
             status: false,
           };
         case '99':

@@ -16,6 +16,7 @@ import { type Request, type Response } from 'express';
 import { createPaymentURLDto } from './dtos/order.dto';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Order } from 'src/order/entities/order.entity';
+import { Render } from '@nestjs/common';
 
 @Controller('vnpay/order')
 @ApiTags('Payment')
@@ -98,6 +99,7 @@ export class OrderController {
 
   @Get('vnpay_return')
   @ApiOperation({ summary: 'Check return from vnpay, auto run after do payment, default return is code 99 transaction fail' })
+  @Render('payment-return') // Specify the name of the Pug template to render
   vnpayReturn(@Query() query) {
     const result = this.orderService.checkReturn(query);
     return result;

@@ -13,7 +13,6 @@ export class AuthController {
         private readonly firebaseService: FirebaseService
     ) { }
     @Post('signup')
-    @HttpCode(200)
     @ApiTags('Auth')
     @ApiOperation({ summary: 'user signup' })
     async signUp(
@@ -22,7 +21,6 @@ export class AuthController {
         return await this.authService.register(data)
     }
     @Post('signin')
-    @HttpCode(200)
     @ApiTags('Auth')
     @ApiOperation({ summary: 'user signin' })
     async signIn(
