@@ -7,7 +7,7 @@
     },
     {
       "src": "/views/*.pug",
-      "use": "@vercel/now"
+      "use": "@vercel/static"
     }
   ],
   "routes": [
