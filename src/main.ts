@@ -50,8 +50,8 @@ async function bootstrap() {
     writeFileSync(pathToSwaggerJson, swaggerJson);
     console.log(`Swagger JSON file written to: '/swagger-static/swagger.json'`);
   }
-  app.useStaticAssets(join(__dirname, '..', 'public'));
-  app.setBaseViewsDir(join(__dirname, '..', 'views'));
+  app.useStaticAssets(join(__dirname, 'public'));
+  app.setBaseViewsDir(join(__dirname, 'views'));
   app.setViewEngine('pug');
   await app.listen(3000);
 }
