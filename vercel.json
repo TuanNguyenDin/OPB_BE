@@ -3,11 +3,11 @@
   "builds": [
     {
       "src": "/src/main.ts",
-      "use": "@vercel/node"
+      "use": "@now/node"
     },
     {
       "src": "/views/*.pug",
-      "use": "@vercel/static"
+      "use": "@now/node"
     }
   ],
   "routes": [
