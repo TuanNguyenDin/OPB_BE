@@ -4,10 +4,6 @@
     {
       "src": "/src/main.ts",
       "use": "@vercel/node"
-    },
-    {
-      "src": "/views/*.pug",
-      "use": "@now/node"
     }
   ],
   "routes": [
@@ -28,6 +24,6 @@
     "EXPIRES_IN_SECONDS": "10800s",
     "VNP_TMNCODE": "GEAWC9W3",
     "VNP_HASH_SECRET": "EHWTBHLGLXNSRQVYZDQOOUJHMQALLNCP",
-    "VNP_RETURN_URL": "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html"
+    "VNP_RETURN_URL": "https://opb-be.vercel.app/payment/vnpay_return"
   }
 }
