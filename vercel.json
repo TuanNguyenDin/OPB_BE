@@ -16,6 +16,10 @@
         "Access-Control-Allow-Methods": "GET, POST, PATCH, PUT, DELETE, OPTIONS",
         "Access-Control-Allow-Headers": "Origin, Content-Type, X-Auth-Token"
       }
+    },
+    {
+      "src": "/check_render",
+      "dest":"/views/index.ejs"
     }
   ],
   "env": {
