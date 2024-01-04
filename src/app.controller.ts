@@ -15,7 +15,7 @@ export class AppController {
   }
   @Get('check_render')
   @Render('index')
-  getHello(): { message: string } {
+  getHello() {
     return { message: this.appService.getHello() }
   }
 }
