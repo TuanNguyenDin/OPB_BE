@@ -5,6 +5,7 @@ import { writeFileSync } from 'fs';
 import { join, resolve } from 'path';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { json, urlencoded } from 'express';
+
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     cors: true,
@@ -13,10 +14,10 @@ async function bootstrap() {
   app.use(json({ limit: '50mb' }));
   app.use(urlencoded({ extended: true, limit: '50mb' }));
 
-  // Add Pug view engine
+  //add views ejs engine
   app.useStaticAssets(join(__dirname, '..', 'public'));
   app.setBaseViewsDir(join(__dirname, '..', 'views'));
-  app.setViewEngine('pug');
+  app.setViewEngine('ejs');
 
   // swagger setup
   const config = new DocumentBuilder()
