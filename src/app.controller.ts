@@ -13,7 +13,7 @@ export class AppController {
   getDocs(): void {
     return
   }
-  @Get('hello')
+  @Get('check_render')
   @Render('index')
   getHello(): { message: string } {
     return { message: this.appService.getHello() }
