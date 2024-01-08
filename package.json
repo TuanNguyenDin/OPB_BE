@@ -35,7 +35,7 @@
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
     "date-fns": "^2.30.0",
-    "ejs": "^3.1.9",
+    "lib/ejs": "^3.1.9", 
     "firebase": "^10.4.0",
     "luxon": "^3.4.4",
     "mongoose": "^7.5.3",
@@ -81,8 +81,8 @@
     },
     "collectCoverageFrom": [
       "**/*.(t|j)s"
-    ],
-    "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
-  }
+    ]
+  },
+  "coverageDirectory": "../coverage",
+  "testEnvironment": "node"
 }
