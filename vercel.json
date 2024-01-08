@@ -18,11 +18,6 @@
       }
     }
   ],
-  "functions": {
-    "lib/ejs": {
-      "runtime": "@vercel/node@1.16.1"
-    }
-  },
   "env": {
     "MONGO_URL": "mongodb+srv://SE151153:SE151153@cluster0.eub0e5r.mongodb.net/OnlinePartybooking",
     "JWT_SECRET": "OnlinePartybooking",
@@ -30,5 +25,10 @@
     "VNP_TMNCODE": "GEAWC9W3",
     "VNP_HASH_SECRET": "EHWTBHLGLXNSRQVYZDQOOUJHMQALLNCP",
     "VNP_RETURN_URL": "https://opb-be.vercel.app/payment/vnpay_return"
+  },
+  "functions": {
+    "lib/ejs": {
+      "runtime": "@vercel/node@1.16.1"
+    }
   }
 }
