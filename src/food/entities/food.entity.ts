@@ -10,7 +10,7 @@ export class Food {
     @Prop({})
     unit: string;
     @Prop({})
-    price: string;
+    price: number;
     @Prop({})
     image: string;
     @Prop({})
