@@ -25,10 +25,5 @@
     "VNP_TMNCODE": "GEAWC9W3",
     "VNP_HASH_SECRET": "EHWTBHLGLXNSRQVYZDQOOUJHMQALLNCP",
     "VNP_RETURN_URL": "https://opb-be.vercel.app/payment/vnpay_return"
-  },
-  "functions": {
-    "lib/ejs": {
-      "runtime": "@vercel/node@1.16.1"
-    }
   }
 }
