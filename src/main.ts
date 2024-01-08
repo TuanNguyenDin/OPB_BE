@@ -16,7 +16,7 @@ async function bootstrap() {
 
   //add views ejs engine
   app.setBaseViewsDir(join(__dirname, '..', 'views'));
-  app.setViewEngine('ejs');
+  app.setViewEngine('hbs');
 
   // swagger setup
   const config = new DocumentBuilder()
