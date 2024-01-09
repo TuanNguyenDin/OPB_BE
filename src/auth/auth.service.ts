@@ -31,8 +31,13 @@ export class AuthService {
       }
 
       const hashpassword = await bcrypt.hash(userData.password, 12);
-      // const userCredential = await createUserWithEmailAndPassword(auth, userData.email, userData.password);//lưu tài khoản và password vào firebase
-      // updateCurrentUser(auth, userData)
+      const userCredential = await createUserWithEmailAndPassword(auth, userData.email, userData.password);//lưu tài khoản và password vào firebase
+
+      // Check if userData contains necessary properties for updating the current user
+      // if (userData.displayName || userData.photoURL) {
+      //   await updateCurrentUser(auth, userData);
+      // }
+
       // await sendEmailVerification(auth.currentUser);//hàm gọi chức năng gửi mail xác nhận đăng kí của user
       // lưu thông tin người dùng vào database
       userData.password = hashpassword;
