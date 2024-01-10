@@ -5,20 +5,41 @@
     <style>
         .image-container {
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+        }
+
+        .image-container-image {
+            height: 50vh;
+        }
+        
+        .image-container-text {
+            font-size: 24px;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
     <div class="image-container">
-        <img src="https://flyclipart.com/thumb2/fail-failed-lock-icon-with-png-and-vector-format-for-free-745392.png" alt="Success Image"></br>
-        <div>
-            thông tin giao dịch: <h4 id="transactionInfo"></h4>
-            Mã giao dịch: <h4 id="transactionId"></h4>
-            Code phản hồi: <h4 id="RspCode"></h4>
-            Tin nhắn: <h4 id="txtMessage"></h4>
+        <div class="image-container-image">
+            <div class="image-container">
+                <div class="image-container-image">
+                    <img src="https://st2.depositphotos.com/3319389/10670/i/450/depositphotos_106700538-stock-photo-modeled-in-3d-exclamation-point.jpg" alt="Success Image">
+                </div>
+                <div class="image-container-text">
+                    <div>Thông tin giao dịch: <h4 id="transactionInfo"></h4></div>
+                    <div>Mã giao dịch: <h4 id="transactionId"></h4></div>
+                    <div>Code phản hồi: <h4 id="RspCode"></h4></div>
+                    <div>Tin nhắn: <h4 id="txtMessage"></h4></div>
+                </div>
+            </div>
+        </div>
+        <div class="image-container-text">
+           <div>Thông tin giao dịch: <h4 id="transactionInfo"></h4></div>
+           <div>Mã giao dịch: <h4 id="transactionId"></h4></div>
+            <div>Code phản hồi: <h4 id="RspCode"></h4></div>
+            <div>Tin nhắn: <h4 id="txtMessage"></h4></div>
         </div>
     </div>
 
