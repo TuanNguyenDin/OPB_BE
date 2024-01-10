@@ -11,12 +11,20 @@
         }
 
         .image-container-image {
+            display: flex;
             height: 50vh;
+            width: 100vw;
         }
         
         .image-container-text {
             font-size: 24px;
             font-weight: bold;
+        }
+        .container-text{
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            width: 100vw;
         }
     </style>
 </head>
@@ -28,18 +36,12 @@
                     <img src="https://st2.depositphotos.com/3319389/10670/i/450/depositphotos_106700538-stock-photo-modeled-in-3d-exclamation-point.jpg" alt="Success Image">
                 </div>
                 <div class="image-container-text">
-                    <div>Thông tin giao dịch: <h4 id="transactionInfo"></h4></div>
-                    <div>Mã giao dịch: <h4 id="transactionId"></h4></div>
-                    <div>Code phản hồi: <h4 id="RspCode"></h4></div>
-                    <div>Tin nhắn: <h4 id="txtMessage"></h4></div>
+                    <div class="container-text">Thông tin giao dịch : <h4 id="transactionInfo"></h4></div>
+                    <div class="container-text">Mã giao dịch : <h4 id="transactionId"></h4></div>
+                    <div class="container-text">Code phản hồi : <h4 id="RspCode"></h4></div>
+                    <div class="container-text">Tin nhắn : <h4 id="txtMessage"></h4></div>
                 </div>
             </div>
-        </div>
-        <div class="image-container-text">
-           <div>Thông tin giao dịch: <h4 id="transactionInfo"></h4></div>
-           <div>Mã giao dịch: <h4 id="transactionId"></h4></div>
-            <div>Code phản hồi: <h4 id="RspCode"></h4></div>
-            <div>Tin nhắn: <h4 id="txtMessage"></h4></div>
         </div>
     </div>
 
