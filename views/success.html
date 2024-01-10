@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Success</title>
+    <style>
+        .image-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+    </style>
+</head>
+<body>
+    <div class="image-container">
+        <img src="https://melissacuturich.com.au/wp-content/uploads/2017/11/success-png-success-icon-image-23194-400.png" alt="Success Image">
+        <h1 id="message"></h1>
+    </div>
+
+    <script>
+        // Parse the URL query parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const message = urlParams.get('message');
+        
+        // Display the message
+        document.getElementById('message').textContent = message;
+    </script>
+</body>
+</html>

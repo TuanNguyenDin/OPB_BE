@@ -16,6 +16,7 @@ import { type Request, type Response } from 'express';
 import { createPaymentURLDto } from './dtos/order.dto';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Order } from 'src/order/entities/order.entity';
+import { payment } from 'src/payment/payment.entity';
 import { Render } from '@nestjs/common';
 
 @Controller('vnpay/order')
@@ -99,10 +100,11 @@ export class OrderController {
 
   @Get('vnpay_return')
   @ApiOperation({ summary: 'Check return from vnpay, auto run after do payment, default return is code 99 transaction fail' })
-  @Render('payment-return') // Specify the name of the Pug template to render
-  vnpayReturn(@Query() query, @Res() res: Response) {
-    const result = this.orderService.checkReturn(query);
-    return res.render('payment-return', { result });
+  async vnpayReturn(@Query() query, @Res() res: Response) {
+    const result = await this.orderService.checkReturn(query);
+    const jsonData = JSON.stringify(result);
+    query.message = jsonData;
+    return { url: `/success.html?message=${query.message}` };
   }
 
   @Get('vnpay_ipn')
@@ -131,13 +133,14 @@ export class OrderController {
   async refund(
     @Req() req: Request,
     @Res() res: Response,
-    @Body() order: Order,
+    @Body() order: payment,
     @Param('orderId') orderId: string,
   ) {
     const ipAddr = req.headers['x-forwarded-for'] || '127.0.0.1';
     const response = await this.orderService.refund(
-      orderId, order.prepaid,
+      orderId, order.amount,
       typeof ipAddr === 'string' ? ipAddr : ipAddr[0],
+      order.reference_transaction_id
     );
   }
 
