@@ -13,6 +13,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { payment } from '../payment.entity';
 import { paymentDTO } from '../payment.dto';
+import { Order } from 'src/order/entities/order.entity';
 
 @Injectable()
 export class OrderService {
@@ -22,6 +23,7 @@ export class OrderService {
 
   constructor(
     @InjectModel('Payment') private readonly paymentModel: Model<payment>,
+    @InjectModel('Order') private readonly orderModel: Model<Order>,
     private readonly configService: ConfigService,
     private readonly httpService: HttpService,
   ) {
@@ -97,6 +99,8 @@ export class OrderService {
     const responseCode = vnp_Params['vnp_ResponseCode'];
     const transaction_id = vnp_Params['vnp_TxnRef'];
     const transaction_info = vnp_Params['vnp_OrderInfo'];
+    const vnp_TransactionNo = vnp_Params['vnp_TransactionNo'];
+    const vnp_Paydate = vnp_Params['vnp_PayDate']
 
     delete vnp_Params['vnp_SecureHash'];
     delete vnp_Params['vnp_SecureHashType'];
@@ -105,11 +109,17 @@ export class OrderService {
 
     const hmac = createHmac('SHA512', this.hashSecret);
     const signed = hmac.update(Buffer.from(newParams, 'utf-8')).digest('hex');
-    let paymentRecord = await this.paymentModel.findOne({ reference_transaction_id: transaction_id });
+    let paymentRecord = await this.paymentModel.findOne({
+      $or: [
+        { reference_transaction_id: transaction_id },
+        { reference_transaction_id: transaction_id + '_2' },
+      ],
+    });
     if (paymentRecord) {
       await this.paymentModel.findByIdAndUpdate(paymentRecord._id, {
+        transactionNo: vnp_TransactionNo,
         status: 'completed',
-        updated_at: DateTime.now().toJSDate(),
+        updated_at: vnp_Paydate,
         updated_by: 'SYSTEM',
       })
     } else {
@@ -120,9 +130,10 @@ export class OrderService {
         content: 'Không thể tìm thấy đơn hàng của bạn, Hãy liên hệ người quản lý để được giải quyết ngay lập tức ' + transaction_info,
         status: 'completed',
         reference_transaction_id: transaction_id,
+        transactionNo: vnp_TransactionNo,
         created_at: DateTime.now().toJSDate(),
         created_by: 'SYSTEM',
-        updated_at: DateTime.now().toJSDate(),
+        updated_at: vnp_Paydate,
         updated_by: 'SYSTEM',
       });
     }
@@ -244,6 +255,14 @@ export class OrderService {
             status: false,
           };
       }
+    } else {
+      return {
+        transactionId: transaction_id,
+        transactionInfo: transaction_info,
+        RspCode: '97',
+        message: 'Lỗi xác thực',
+        status: false,
+      }
     }
   }
 
@@ -363,57 +382,109 @@ export class OrderService {
     );
     return response.data;
   }
-  async refund(orderId: string, amount: number, ip: string): Promise<boolean> {
-    const vnpUrl = 'https://sandbox.vnpayment.vn/paymentv2/vnprest';
-    const vnpVersion = '2.0.0';
-    const vnpCommand = 'refund';
-    const vnpTmnCode = this.tmnCode;
-    const vnpHashSecret = this.hashSecret;
+  async refund(orderId: string, ip: string): Promise<boolean> {
+    //maybe use url refund https://sandbox.vnpayment.vn/merchantv2/Transaction/Refund/{}.htm not use
+    // const vnpUrl = 'https://sandbox.vnpayment.vn/merchant_webapi/api/transaction';
+    // const vnpVersion = '2.0.0';
+    // const vnpCommand = 'refund';
+    // const vnpTmnCode = this.tmnCode;
+    // const vnpHashSecret = this.hashSecret;
 
-    const vnpParams = {
-      vnp_Version: vnpVersion,
-      vnp_Command: vnpCommand,
-      vnp_TmnCode: vnpTmnCode,
-      vnp_Amount: amount, // Convert amount to cents
-      vnp_OrderInfo: `Refund for order ${orderId}`,
-      vnp_OrderType: '',
-      vnp_TransactionId: orderId,
-      vnp_IpAddr: ip, // Provide the IP address of the server making the request
-      vnp_CreateDate: DateTime.utc().toFormat('yyyyMMddHHmmss'),
+    //find order and it's payment bill
+    const order = await this.orderModel.findById(orderId).exec();
+    const payment = await this.paymentModel.find({ order_id: orderId }).exec();
+    let amount = 0;
+    let TransactionId = '';
+    let createDate
+
+
+    if (!order || !payment) {
+      console.error('Order or payment not found');
+      return false;
+    } else {
+        if (payment.length > 1) {
+          amount = order.total_price-order.prepaid;
+          TransactionId = orderId + '_2';
+          createDate = payment[1].updated_at;
+        } else {
+          amount = order.prepaid;
+          TransactionId = orderId;
+          createDate = payment[0].updated_at;
+        }
+        console.log("payment: ", payment); 
+    }
+    process.env.TZ = 'Asia/Ho_Chi_Minh';
+    const now = DateTime.now().setZone('Asia/Ho_Chi_Minh');
+
+    const vnp_RequestId = now.toFormat('hhmmss');
+    const vnp_Version = '2.1.0';
+    const vnp_Command = 'refund';
+    const vnp_TxnRef = TransactionId;
+    const vnp_TransactionDate = DateTime.fromJSDate(createDate).toUTC().toFormat('yyyyMMddHHmmss');
+    const vnp_OrderInfo = 'Truy van hoàn trả ma:' + vnp_TxnRef;
+    const vnp_CreateDate = now.toFormat('yyyyLLddHHmmss');
+
+    const dataObj = {
+      vnp_RequestId: vnp_RequestId,
+      vnp_Version: vnp_Version,
+      vnp_Command: vnp_Command,
+      vnp_TmnCode: this.tmnCode,
+      vnp_TxnRef: vnp_TxnRef,
+      vnp_OrderInfo: vnp_OrderInfo,
+      vnp_TransactionDate: vnp_TransactionDate,
+      vnp_CreateDate: vnp_CreateDate,
+      vnp_TransactionType: '02',
+      vnp_IpAddr: ip,
+      vnp_CreateBy: 'SYSTEM',
+      vnp_TransactionNo:'',
+      vnp_Amount: amount,
+      vnp_TransDate: DateTime.fromJSDate(payment[0].updated_at).toUTC().toFormat('yyyyMMddHHmmss'),
     };
+    const data = 
+    dataObj.vnp_RequestId + '|' 
+    + dataObj.vnp_Version + '|' + 
+    dataObj.vnp_Command + '|' + 
+    dataObj.vnp_TmnCode + '|' + 
+    dataObj.vnp_TransactionType + '|' + 
+    dataObj.vnp_TxnRef + '|' + 
+    dataObj.vnp_Amount + '|' + 
+    dataObj.vnp_TransactionNo + '|' + 
+    dataObj.vnp_TransactionDate + '|' + 
+    dataObj.vnp_CreateBy + '|' + 
+    vnp_CreateDate + '|' + 
+    dataObj.vnp_IpAddr + '|' + 
+    vnp_OrderInfo;
 
-    const vnpSecureHash = createHmac('SHA512', vnpHashSecret)
-      .update(Object.values(vnpParams).join(''))
-      .digest('hex');
-
-    const vnpRequestBody = {
-      ...vnpParams,
-      vnp_SecureHash: vnpSecureHash,
+  const hmac = createHmac('SHA256', this.hashSecret);
+  const vnp_SecureHash = hmac
+    .update(Buffer.from(data, 'utf-8'))
+    .digest('hex');
+  const vnpRequestBody = {
+      ...dataObj,
+      vnp_SecureHash: vnp_SecureHash,
     };
+    // const query = new URLSearchParams(dataObj);
+    console.log("begin call API Refund");
+    
+    const response = await lastValueFrom(
+      this.httpService.post(
+        'https://sandbox.vnpayment.vn/merchant_webapi/api/transaction',
+        vnpRequestBody,
+      ),
+    );
+    console.log("response: ", response.data);
+    
+    return response.data;
+  }
 
+  async findPaymentByOrderId(orderId: string): Promise<paymentDTO[] | null> {
     try {
-      const response = await lastValueFrom(
-        this.httpService.post(`${vnpUrl}/vnpayrefund`, vnpRequestBody)
-      );
-
-      if (response.data && response.data.code === '00') {
-        return true; // Refund successful
-      } else {
-        return false; // Refund failed
-      }
+      const payment = await this.paymentModel.find({ order_id: orderId }).exec();
+      return payment as paymentDTO[];
     } catch (error) {
-      console.error('Error occurred during refund:', error);
-      return false; // Refund failed
+      console.error('Error occurred while finding payment by order_id:', error);
+      return null;
     }
   }
-async findPaymentByOrderId(orderId: string): Promise<paymentDTO[] | null> {
-  try {
-    const payment = await this.paymentModel.find({ order_id: orderId }).exec();
-    return payment as paymentDTO[];
-  } catch (error) {
-    console.error('Error occurred while finding payment by order_id:', error);
-    return null;
-  }
-}
 
 }

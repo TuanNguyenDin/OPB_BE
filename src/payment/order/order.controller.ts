@@ -9,6 +9,7 @@ import {
   UsePipes,
   ValidationPipe,
   Param,
+  Redirect,
 } from '@nestjs/common';
 import { OrderService } from './order.service';
 
@@ -99,12 +100,18 @@ export class OrderController {
   }
 
   @Get('vnpay_return')
+  @Redirect('/success.html')
   @ApiOperation({ summary: 'Check return from vnpay, auto run after do payment, default return is code 99 transaction fail' })
   async vnpayReturn(@Query() query, @Res() res: Response) {
     const result = await this.orderService.checkReturn(query);
+    // res.render('success.html', { message: result?.message, root: 'views' });
     const jsonData = JSON.stringify(result);
     query.message = jsonData;
-    return { url: `/success.html?message=${query.message}` };
+    if (result.status) {
+      return { url: `/success.html?message=${query.message}` };
+    } else {
+      return { url: `/fail.html?message=${query.message}` }
+    }
   }
 
   @Get('vnpay_ipn')
@@ -133,15 +140,18 @@ export class OrderController {
   async refund(
     @Req() req: Request,
     @Res() res: Response,
-    @Body() order: payment,
     @Param('orderId') orderId: string,
   ) {
     const ipAddr = req.headers['x-forwarded-for'] || '127.0.0.1';
     const response = await this.orderService.refund(
-      orderId, order.amount,
+      orderId,
       typeof ipAddr === 'string' ? ipAddr : ipAddr[0],
-      order.reference_transaction_id
     );
+    if (response) {
+      return res.json({ response: response, message: "Refund payment success" });
+    } else {
+      return res.json({ response: response, message: "Refund payment fail" });
+    }
   }
 
   @Get('find_payment/:orderId')

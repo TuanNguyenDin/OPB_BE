@@ -16,6 +16,8 @@ export class payment{
     @Prop({})
     reference_transaction_id: string;
     @Prop({})
+    transactionNo: string;
+    @Prop({})
     created_at: Date;
     @Prop({})
     created_by: string;
