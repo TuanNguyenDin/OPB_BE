@@ -13,13 +13,18 @@ export class FoodOrderService {
     @InjectModel('FoodOrder') private readonly foodOrderModel: Model<FoodOrder>,
     @InjectModel('Order') private readonly orderModel: Model<Order>,
     @InjectModel('Food') private readonly foodModel: Model<Food>
-  ) {}
+  ) { }
   async create(createFoodOrderDto: CreateFoodOrderDto,) {
-    // const order = await this.orderModel.findById(createFoodOrderDto.order_id);
+    const exsitOrderFood = await this.foodOrderModel.find({ food_id: createFoodOrderDto.food_id, order_id: null }).exec();
     const food = await this.foodModel.findById(createFoodOrderDto.food_id);
     // if (!order) {throw new HttpException('Order not found', 404);}
-    if (!food) {throw new HttpException('Food not found', 404);}
-    return await this.foodOrderModel.create(createFoodOrderDto);
+    if (!food) { throw new HttpException('Food not found', 404); }
+    
+    if (exsitOrderFood.length === 0) {
+      return await this.foodOrderModel.create(createFoodOrderDto);
+    } else {
+      return exsitOrderFood;
+    }
   }
 
   async findAll() {
@@ -31,11 +36,11 @@ export class FoodOrderService {
   }
 
   async findByOrderId(id: string) {
-    return await this.foodOrderModel.find({order_id: id}).populate('food_id').populate('order_id').exec();
+    return await this.foodOrderModel.find({ order_id: id }).populate('food_id').populate('order_id').exec();
   }
 
   async update(id: string, updateFoodOrderDto: UpdateFoodOrderDto) {
-    return await this.foodOrderModel.findByIdAndUpdate(id,updateFoodOrderDto,{new: true});
+    return await this.foodOrderModel.findByIdAndUpdate(id, updateFoodOrderDto, { new: true });
   }
 
   async remove(id: string) {
