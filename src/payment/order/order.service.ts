@@ -255,14 +255,6 @@ export class OrderService {
             status: false,
           };
       }
-    } else {
-      return {
-        transactionId: transaction_id,
-        transactionInfo: transaction_info,
-        RspCode: '97',
-        message: 'Lỗi xác thực',
-        status: false,
-      }
     }
   }
 
@@ -455,7 +447,7 @@ export class OrderService {
     dataObj.vnp_IpAddr + '|' + 
     vnp_OrderInfo;
 
-  const hmac = createHmac('SHA256', this.hashSecret);
+  const hmac = createHmac('SHA512', this.hashSecret);
   const vnp_SecureHash = hmac
     .update(Buffer.from(data, 'utf-8'))
     .digest('hex');
