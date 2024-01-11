@@ -8,6 +8,8 @@ export class Feedback {
     @Prop({type: mongoose.Schema.Types.ObjectId, ref: 'Order', unique: true})
     orderId: Order;
     @Prop({})
+    title: string;
+    @Prop({})
     rating: number;
     @Prop({})
     comment: string;
