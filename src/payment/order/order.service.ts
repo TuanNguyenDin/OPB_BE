@@ -255,6 +255,14 @@ export class OrderService {
             status: false,
           };
       }
+    }else{
+      return {
+        transactionId: transaction_id,
+        transactionInfo: transaction_info,
+        RspCode: '97',
+        message: 'Giao dịch đã được thực hiện',
+        status: true,
+      };
     }
   }
 
