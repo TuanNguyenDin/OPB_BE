@@ -13,8 +13,8 @@ export class ServiceOrderService {
     @InjectModel('Order') private readonly orderModel: Model<Order>
   ){}
   async create(createServiceOrderDto: CreateServiceOrderDto) {
-    const existServie = await this.serviceOderModel.find({service_id: createServiceOrderDto.service_id, order_id: null})
-    if (existServie.length === 0) {
+    const existServie = await this.serviceOderModel.findOne({service_id: createServiceOrderDto.service_id, order_id: null})
+    if (existServie === null) {
       return await this.serviceOderModel.create(createServiceOrderDto);
     } else {
       return existServie;

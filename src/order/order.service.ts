@@ -6,13 +6,15 @@ import { Model } from 'mongoose';
 import { Order } from './entities/order.entity';
 import { Account } from 'src/auth/entities/user.entities';
 import { Restaurant } from 'src/restaurant/entities/restaurant.entity';
+import { Notify } from 'src/notify/entities/notify.entity';
 
 @Injectable()
 export class OrderService {
   constructor(
     @InjectModel('Order') private readonly orderModel: Model<Order>,
     @InjectModel('Account') private readonly accountModel: Model<Account>, 
-    @InjectModel('Restaurant') private readonly restaurantModel: Model<Restaurant>
+    @InjectModel('Restaurant') private readonly restaurantModel: Model<Restaurant>,
+    @InjectModel('Notify') private readonly NotifyModel: Model<Notify>
   ) {}
   async create(createOrderDto: CreateOrderDto, useID:string, restaurantID:string) {
     const creator = await this.accountModel.findById(useID);
@@ -36,8 +38,25 @@ export class OrderService {
 
   async update(id: string, updateOrderDto: UpdateOrderDto, useID: string) {
     const creator = await this.accountModel.findById(useID);
+    
     if (!creator) {throw new HttpException('User not found', 404);}
     updateOrderDto.updated_by = useID;
+
+    if (updateOrderDto.status === 'canceled') {
+      const order = await this.orderModel.findById(id);
+      if (!order) {throw new HttpException('Order not found', 404);}
+      if(order.created_by !== useID) {throw new HttpException('User not authentication', 403);}
+
+      const notify = await this.NotifyModel.create({
+        title: 'Order canceled',
+        content: `Order ${order._id} has been canceled`,
+        send_to: order.customer_id,
+        created_by: useID,
+        isRead: false
+      });
+      if (!notify) {throw new HttpException('Notify not found', 404);}
+    }
+
     return await this.orderModel.findByIdAndUpdate(id, updateOrderDto, { new: true });
   }
 

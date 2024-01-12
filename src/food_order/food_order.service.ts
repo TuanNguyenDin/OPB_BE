@@ -15,12 +15,11 @@ export class FoodOrderService {
     @InjectModel('Food') private readonly foodModel: Model<Food>
   ) { }
   async create(createFoodOrderDto: CreateFoodOrderDto,) {
-    const exsitOrderFood = await this.foodOrderModel.find({ food_id: createFoodOrderDto.food_id, order_id: null }).exec();
+    const exsitOrderFood = await this.foodOrderModel.findOne({ food_id: createFoodOrderDto.food_id, order_id: null }).exec();
     const food = await this.foodModel.findById(createFoodOrderDto.food_id);
-    // if (!order) {throw new HttpException('Order not found', 404);}
     if (!food) { throw new HttpException('Food not found', 404); }
     
-    if (exsitOrderFood.length === 0) {
+    if (exsitOrderFood===null) {
       return await this.foodOrderModel.create(createFoodOrderDto);
     } else {
       return exsitOrderFood;
