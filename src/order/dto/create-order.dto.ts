@@ -27,4 +27,6 @@ export class CreateOrderDto {
     started_at: Date;
     @ApiProperty({example: '5/1', description: 'The date end party of the order'})
     ended_at: Date;
+    @ApiProperty({example: '512/1A', description: 'The address of the order'})
+    address: string;
 }

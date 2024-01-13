@@ -33,6 +33,8 @@ export class Order {
     started_at: Date;
     @Prop({})
     ended_at: Date;
+    @Prop({})
+    address: string;
 }
 export type OrderDocument = HydratedDocument<Order>;
 export const OrderSchema = SchemaFactory.createForClass(Order);
