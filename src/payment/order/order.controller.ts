@@ -38,7 +38,7 @@ export class OrderController {
       transformOptions: { enableImplicitConversion: true },
     }),
   )
-  createPaymentUrl(
+  async createPaymentUrl(
     @Req() req: Request,
     @Res() res: Response,
     @Body() dto: createPaymentURLDto,
@@ -46,7 +46,7 @@ export class OrderController {
   ) {
     const ipAddr = req.headers['x-forwarded-for'];
 
-    const url = this.orderService.createPaymentURL(
+    const url = await this.orderService.createPaymentURL(
       typeof ipAddr === 'string' ? ipAddr : ipAddr[0],
       dto, orderCreated
     );
@@ -66,7 +66,7 @@ export class OrderController {
       transformOptions: { enableImplicitConversion: true },
     }),
   )
-  getQuery(
+  async getQuery(
     @Req() req: Request,
     @Res() res: Response,
     @Query() query: createPaymentURLDto,
@@ -74,7 +74,7 @@ export class OrderController {
   ) {
     const ipAddr = req.headers['x-forwarded-for'] || '127.0.0.1';
 
-    const url = this.orderService.createPaymentURL(
+    const url = await this.orderService.createPaymentURL(
       query.ip ?? (typeof ipAddr === 'string' ? ipAddr : ipAddr[0]),
       query, orderCreated
     );
@@ -83,7 +83,7 @@ export class OrderController {
   }
 
   @Post('create_payment_url/:orderCreated')
-  postPaymentUrl(
+  async postPaymentUrl(
     @Req() req: Request,
     @Res() res: Response,
     @Body() dto: createPaymentURLDto,
@@ -91,7 +91,7 @@ export class OrderController {
   ) {
     const ipAddr = req.headers['x-forwarded-for'] || '127.0.0.1';
 
-    const url = this.orderService.createPaymentURL(
+    const url = await this.orderService.createPaymentURL(
       dto.ip ?? (typeof ipAddr === 'string' ? ipAddr : ipAddr[0]),
       dto, orderCreated
     );
