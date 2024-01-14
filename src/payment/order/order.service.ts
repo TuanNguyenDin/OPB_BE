@@ -31,7 +31,7 @@ export class OrderService {
     this.hashSecret = this.configService.get('VNP_HASH_SECRET');
     this.returnUrl = this.configService.get('VNP_RETURN_URL');
   }
-  createPaymentURL(
+  async createPaymentURL(
     ip: string,
     {
       amount,
@@ -46,7 +46,11 @@ export class OrderService {
     process.env.TZ = 'Asia/Ho_Chi_Minh';
     const now = DateTime.now().setZone('Asia/Ho_Chi_Minh');
     const nowFormat = now.toFormat('yyyyLLddHHmmss');
-    const orderIds = orderId ?? now.toFormat('ddHHmmss');
+    let orderIds = orderId ?? now.toFormat('ddHHmmss');
+    const paymentExists = await this.paymentModel.find({ order_id: orderId }).exec();
+    if (paymentExists.length > 0) {
+       orderIds = orderId + '|' + paymentExists.length + 1 ?? now.toFormat('ddHHmmss');
+    }
 
     const url = new URL(VNP_URL);
 
@@ -87,6 +91,7 @@ export class OrderService {
         created_by: 'SYSTEM',
         updated_at: now.toJSDate(),
         updated_by: 'SYSTEM',
+        vnp_SecureHash: signed,
       })
     this.paymentModel.create(paymentStore);
     return { url: url.toString(), paymentStore: paymentStore };
@@ -135,6 +140,7 @@ export class OrderService {
         created_by: 'SYSTEM',
         updated_at: vnp_Paydate,
         updated_by: 'SYSTEM',
+        vnp_SecureHash: secureHash,
       });
     }
     if (signed === secureHash) {
@@ -255,7 +261,7 @@ export class OrderService {
             status: false,
           };
       }
-    }else{
+    } else {
       return {
         transactionId: transaction_id,
         transactionInfo: transaction_info,
@@ -402,16 +408,16 @@ export class OrderService {
       console.error('Order or payment not found');
       return false;
     } else {
-        if (payment.length > 1) {
-          amount = order.total_price-order.prepaid;
-          TransactionId = orderId + '_2';
-          createDate = payment[1].updated_at;
-        } else {
-          amount = order.prepaid;
-          TransactionId = orderId;
-          createDate = payment[0].updated_at;
-        }
-        console.log("payment: ", payment); 
+      if (payment.length > 1) {
+        amount = order.total_price - order.prepaid;
+        TransactionId = orderId + '_2';
+        createDate = payment[1].updated_at;
+      } else {
+        amount = order.prepaid;
+        TransactionId = orderId;
+        createDate = payment[0].updated_at;
+      }
+      console.log("payment: ", payment);
     }
     process.env.TZ = 'Asia/Ho_Chi_Minh';
     const now = DateTime.now().setZone('Asia/Ho_Chi_Minh');
@@ -436,36 +442,36 @@ export class OrderService {
       vnp_TransactionType: '02',
       vnp_IpAddr: ip,
       vnp_CreateBy: 'SYSTEM',
-      vnp_TransactionNo:'',
+      vnp_TransactionNo: '',
       vnp_Amount: amount,
       vnp_TransDate: DateTime.fromJSDate(payment[0].updated_at).toUTC().toFormat('yyyyMMddHHmmss'),
     };
-    const data = 
-    dataObj.vnp_RequestId + '|' 
-    + dataObj.vnp_Version + '|' + 
-    dataObj.vnp_Command + '|' + 
-    dataObj.vnp_TmnCode + '|' + 
-    dataObj.vnp_TransactionType + '|' + 
-    dataObj.vnp_TxnRef + '|' + 
-    dataObj.vnp_Amount + '|' + 
-    dataObj.vnp_TransactionNo + '|' + 
-    dataObj.vnp_TransactionDate + '|' + 
-    dataObj.vnp_CreateBy + '|' + 
-    vnp_CreateDate + '|' + 
-    dataObj.vnp_IpAddr + '|' + 
-    vnp_OrderInfo;
+    const data =
+      dataObj.vnp_RequestId + '|'
+      + dataObj.vnp_Version + '|' +
+      dataObj.vnp_Command + '|' +
+      dataObj.vnp_TmnCode + '|' +
+      dataObj.vnp_TransactionType + '|' +
+      dataObj.vnp_TxnRef + '|' +
+      dataObj.vnp_Amount + '|' +
+      dataObj.vnp_TransactionNo + '|' +
+      dataObj.vnp_TransactionDate + '|' +
+      dataObj.vnp_CreateBy + '|' +
+      vnp_CreateDate + '|' +
+      dataObj.vnp_IpAddr + '|' +
+      vnp_OrderInfo;
 
-  const hmac = createHmac('SHA512', this.hashSecret);
-  const vnp_SecureHash = hmac
-    .update(Buffer.from(data, 'utf-8'))
-    .digest('hex');
-  const vnpRequestBody = {
+    const hmac = createHmac('SHA512', this.hashSecret);
+    const vnp_SecureHash = hmac
+      .update(Buffer.from(data, 'utf-8'))
+      .digest('hex');
+    const vnpRequestBody = {
       ...dataObj,
       vnp_SecureHash: vnp_SecureHash,
     };
     // const query = new URLSearchParams(dataObj);
     console.log("begin call API Refund");
-    
+
     const response = await lastValueFrom(
       this.httpService.post(
         'https://sandbox.vnpayment.vn/merchant_webapi/api/transaction',
@@ -473,7 +479,7 @@ export class OrderService {
       ),
     );
     console.log("response: ", response.data);
-    
+
     return response.data;
   }
 

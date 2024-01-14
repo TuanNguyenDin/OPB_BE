@@ -11,6 +11,7 @@ export class paymentDTO {
   created_by: string;
   updated_at: Date;
   updated_by: string;
+  vnp_SecureHash: string;
 
   constructor(data: {
     amount: number;
@@ -23,6 +24,7 @@ export class paymentDTO {
     created_by: string;
     updated_at: Date;
     updated_by: string;
+    vnp_SecureHash: string;
   }) {
     // Khởi tạo các thuộc tính từ tham số truyền vào
     this.amount = data.amount;
@@ -35,6 +37,7 @@ export class paymentDTO {
     this.created_by = data.created_by;
     this.updated_at = data.updated_at;
     this.updated_by = data.updated_by;
+    this.vnp_SecureHash = data.vnp_SecureHash;
   }
 }
 export class paymentCardDTO {

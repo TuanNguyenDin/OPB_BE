@@ -25,6 +25,8 @@ export class payment{
     updated_at: Date;
     @Prop({})
     updated_by: string;
+    @Prop({})
+    vnp_SecureHash: string;
 }
 @Schema({timestamps: true})
 export class PaymentCard{

@@ -11,9 +11,9 @@ export class ServiceOrderService {
   constructor(
     @InjectModel('ServiceOrder') private readonly serviceOderModel: Model<ServiceOrder>,
     @InjectModel('Order') private readonly orderModel: Model<Order>
-  ){}
+  ) { }
   async create(createServiceOrderDto: CreateServiceOrderDto) {
-    const existServie = await this.serviceOderModel.findOne({service_id: createServiceOrderDto.service_id, order_id: null})
+    const existServie = await this.serviceOderModel.findOne({ service_id: createServiceOrderDto.service_id, order_id: null, created_by: createServiceOrderDto.created_by })
     if (existServie === null) {
       return await this.serviceOderModel.create(createServiceOrderDto);
     } else {
@@ -29,11 +29,11 @@ export class ServiceOrderService {
     return (await this.serviceOderModel.findById(id)).populated('order_id').populate('service_id').exec();
   }
   async findByOrderId(id: string) {
-    return await this.serviceOderModel.find({order_id: id}).populate('order_id').populate('service_id').exec();
+    return await this.serviceOderModel.find({ order_id: id }).populate('order_id').populate('service_id').exec();
   }
 
   async update(id: string, updateServiceOrderDto: UpdateServiceOrderDto) {
-    return await this.serviceOderModel.findByIdAndUpdate(id,updateServiceOrderDto)
+    return await this.serviceOderModel.findByIdAndUpdate(id, updateServiceOrderDto)
   }
 
   async remove(id: string) {
