@@ -45,7 +45,6 @@ export class OrderService {
     if (updateOrderDto.status === 'canceled') {
       const order = await this.orderModel.findById(id);
       if (!order) {throw new HttpException('Order not found', 404);}
-      if(order.created_by !== useID) {throw new HttpException('User not authentication', 403);}
 
       const notify = await this.NotifyModel.create({
         title: 'Order canceled',
