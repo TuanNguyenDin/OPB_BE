@@ -49,7 +49,7 @@ export class OrderService {
     let orderIds = orderId ?? now.toFormat('ddHHmmss');
     const paymentExists = await this.paymentModel.find({ order_id: orderId }).exec();
     if (paymentExists.length > 0) {
-       orderIds = orderId + '|' + paymentExists.length + 1 ?? now.toFormat('ddHHmmss');
+      orderIds = orderId + '|' + paymentExists.length + 1 ?? now.toFormat('ddHHmmss');
     }
 
     const url = new URL(VNP_URL);
@@ -144,132 +144,133 @@ export class OrderService {
       });
     }
     if (signed === secureHash) {
-      switch (responseCode) {
-        case '00':
-          return {
-            transactionId: transaction_id,
-            transactionInfo: transaction_info,
-            RspCode: '00',
-            message: 'Thành công',
-            status: true,
-          };
-        case '07':
-          return {
-            transactionId: transaction_id,
-            transactionInfo: transaction_info,
-            RspCode: '07',
-            message:
-              'Trừ tiền thành công. Giao dịch bị nghi ngờ (liên quan tới lừa đảo, giao dịch bất thường).',
-            status: false,
-          };
-        case '09':
-          return {
-            transactionId: transaction_id,
-            transactionInfo: transaction_info,
-            RspCode: '09',
-            message:
-              'Thẻ/Tài khoản của khách hàng chưa đăng ký dịch vụ InternetBanking tại ngân hàng',
-            status: false,
-          };
-        case '10':
-          return {
-            transactionId: transaction_id,
-            transactionInfo: transaction_info,
-            RspCode: '10',
-            message:
-              'Thẻ/Tài khoản của khách hàng chưa đăng ký dịch vụ InternetBanking tại ngân hàng',
-            status: false,
-          };
-        case '11':
-          return {
-            transactionId: transaction_id,
-            transactionInfo: transaction_info,
-            RspCode: '11',
-            message:
-              'Đã hết hạn chờ thanh toán. Xin quý khách vui lòng thực hiện lại giao dịch.',
-            status: false,
-          };
-        case '12':
-          return {
-            transactionId: transaction_id,
-            transactionInfo: transaction_info,
-            RspCode: '12',
-            message:
-              'Đã hết hạn chờ thanh toán. Xin quý khách vui lòng thực hiện lại giao dịch.',
-            status: false,
-          };
-        case '13':
-          return {
-            transactionId: transaction_id,
-            transactionInfo: transaction_info,
-            RspCode: '13',
-            message:
-              'Quý khách nhập sai mật khẩu xác thực giao dịch (OTP). Xin quý khách vui lòng thực hiện lại giao dịch.',
-            status: false,
-          };
-        case '24':
-          return {
-            transactionId: transaction_id,
-            transactionInfo: transaction_info,
-            RspCode: '24',
-            message:
-              'Quý khách nhập sai mật khẩu xác thực giao dịch (OTP). Xin quý khách vui lòng thực hiện lại giao dịch.',
-            status: false,
-          };
-        case '51':
-          return {
-            transactionId: transaction_id,
-            transactionInfo: transaction_info,
-            RspCode: '51',
-            message:
-              'Tài khoản của quý khách không đủ số dư để thực hiện giao dịch.',
-            status: false,
-          };
-        case '65':
-          return {
-            transactionId: transaction_id,
-            transactionInfo: transaction_info,
-            RspCode: '65',
-            message:
-              'Tài khoản của Quý khách đã vượt quá hạn mức giao dịch trong ngày.',
-            status: false,
-          };
-        case '75':
-          return {
-            transactionId: transaction_id,
-            transactionInfo: transaction_info,
-            RspCode: '75',
-            message:
-              'Tài khoản của Quý khách đã vượt quá hạn mức giao dịch trong ngày.',
-            status: false,
-          };
-        case '79':
-          return {
-            transactionId: transaction_id,
-            transactionInfo: transaction_info,
-            RspCode: '79',
-            message:
-              'Nhập sai mật khẩu thanh toán quá số lần quy định. Xin quý khách vui lòng thực hiện lại giao dịch',
-            status: false,
-          };
-        case '99':
-          return {
-            transactionId: transaction_id,
-            transactionInfo: transaction_info,
-            RspCode: '99',
-            message: 'Lỗi khác chưa xác định',
-            status: false,
-          };
-      }
-    } else {
-      return {
-        transactionId: transaction_id,
-        transactionInfo: transaction_info,
-        RspCode: '97',
-        message: 'Giao dịch đã được thực hiện',
-        status: true,
-      };
-    }
+    switch (responseCode) {
+      case '00':
+        return {
+          transactionId: transaction_id,
+          transactionInfo: transaction_info,
+          RspCode: '00',
+          message: 'Thành công',
+          status: true,
+        };
+      case '07':
+        return {
+          transactionId: transaction_id,
+          transactionInfo: transaction_info,
+          RspCode: '07',
+          message:
+            'Trừ tiền thành công. Giao dịch bị nghi ngờ (liên quan tới lừa đảo, giao dịch bất thường).',
+          status: false,
+        };
+      case '09':
+        return {
+          transactionId: transaction_id,
+          transactionInfo: transaction_info,
+          RspCode: '09',
+          message:
+            'Thẻ/Tài khoản của khách hàng chưa đăng ký dịch vụ InternetBanking tại ngân hàng',
+          status: false,
+        };
+      case '10':
+        return {
+          transactionId: transaction_id,
+          transactionInfo: transaction_info,
+          RspCode: '10',
+          message:
+            'Thẻ/Tài khoản của khách hàng chưa đăng ký dịch vụ InternetBanking tại ngân hàng',
+          status: false,
+        };
+      case '11':
+        return {
+          transactionId: transaction_id,
+          transactionInfo: transaction_info,
+          RspCode: '11',
+          message:
+            'Đã hết hạn chờ thanh toán. Xin quý khách vui lòng thực hiện lại giao dịch.',
+          status: false,
+        };
+      case '12':
+        return {
+          transactionId: transaction_id,
+          transactionInfo: transaction_info,
+          RspCode: '12',
+          message:
+            'Đã hết hạn chờ thanh toán. Xin quý khách vui lòng thực hiện lại giao dịch.',
+          status: false,
+        };
+      case '13':
+        return {
+          transactionId: transaction_id,
+          transactionInfo: transaction_info,
+          RspCode: '13',
+          message:
+            'Quý khách nhập sai mật khẩu xác thực giao dịch (OTP). Xin quý khách vui lòng thực hiện lại giao dịch.',
+          status: false,
+        };
+      case '24':
+        return {
+          transactionId: transaction_id,
+          transactionInfo: transaction_info,
+          RspCode: '24',
+          message:
+            'Quý khách nhập sai mật khẩu xác thực giao dịch (OTP). Xin quý khách vui lòng thực hiện lại giao dịch.',
+          status: false,
+        };
+      case '51':
+        return {
+          transactionId: transaction_id,
+          transactionInfo: transaction_info,
+          RspCode: '51',
+          message:
+            'Tài khoản của quý khách không đủ số dư để thực hiện giao dịch.',
+          status: false,
+        };
+      case '65':
+        return {
+          transactionId: transaction_id,
+          transactionInfo: transaction_info,
+          RspCode: '65',
+          message:
+            'Tài khoản của Quý khách đã vượt quá hạn mức giao dịch trong ngày.',
+          status: false,
+        };
+      case '75':
+        return {
+          transactionId: transaction_id,
+          transactionInfo: transaction_info,
+          RspCode: '75',
+          message:
+            'Tài khoản của Quý khách đã vượt quá hạn mức giao dịch trong ngày.',
+          status: false,
+        };
+      case '79':
+        return {
+          transactionId: transaction_id,
+          transactionInfo: transaction_info,
+          RspCode: '79',
+          message:
+            'Nhập sai mật khẩu thanh toán quá số lần quy định. Xin quý khách vui lòng thực hiện lại giao dịch',
+          status: false,
+        };
+      case '99':
+        return {
+          transactionId: transaction_id,
+          transactionInfo: transaction_info,
+          RspCode: '99',
+          message: 'Lỗi khác chưa xác định',
+          status: false,
+        };
+      // }
+      // } else {
+      default:
+        return {
+          transactionId: transaction_id,
+          transactionInfo: transaction_info,
+          RspCode: '97',
+          message: 'Giao dịch đã được thực hiện',
+          status: true,
+        };
+    }}
   }
 
   checkIpn(query: Record<string, any>) {

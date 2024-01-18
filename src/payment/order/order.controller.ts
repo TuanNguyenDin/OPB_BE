@@ -127,7 +127,7 @@ export class OrderController {
     @Res() res: Response,
     @Body() dto: Record<string, any>,
   ) {
-    const ipAddr = req.headers['x-forwarded-for'] || '127.0.0.1';
+    const ipAddr = req.headers['x-forwarded-for'] || '169.254.68.37';
     const response = await this.orderService.queryDr(
       dto,
       typeof ipAddr === 'string' ? ipAddr : ipAddr[0],
