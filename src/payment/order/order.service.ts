@@ -143,7 +143,7 @@ export class OrderService {
         vnp_SecureHash: secureHash,
       });
     }
-    if (signed === secureHash) {
+    // if (signed === secureHash) {
     switch (responseCode) {
       case '00':
         return {
@@ -270,7 +270,7 @@ export class OrderService {
           message: 'Giao dịch đã được thực hiện',
           status: true,
         };
-    }}
+    }
   }
 
   checkIpn(query: Record<string, any>) {
@@ -390,14 +390,6 @@ export class OrderService {
     return response.data;
   }
   async refund(orderId: string, ip: string): Promise<boolean> {
-    //maybe use url refund https://sandbox.vnpayment.vn/merchantv2/Transaction/Refund/{}.htm not use
-    // const vnpUrl = 'https://sandbox.vnpayment.vn/merchant_webapi/api/transaction';
-    // const vnpVersion = '2.0.0';
-    // const vnpCommand = 'refund';
-    // const vnpTmnCode = this.tmnCode;
-    // const vnpHashSecret = this.hashSecret;
-
-    //find order and it's payment bill
     const order = await this.orderModel.findById(orderId).exec();
     const payment = await this.paymentModel.find({ order_id: orderId }).exec();
     let amount = 0;
