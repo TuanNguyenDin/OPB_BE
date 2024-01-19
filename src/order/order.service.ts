@@ -54,7 +54,7 @@ export class OrderService {
     if (!creator) { throw new HttpException('User not found', 404); }
     updateOrderDto.updated_by = useID;
 
-
+    const reason = updateOrderDto.description || '';
     const order = await this.orderModel.findById(id);
     if (!order) { throw new HttpException('Order not found', 404); }
     try {
@@ -62,7 +62,7 @@ export class OrderService {
       switch (updateOrderDto.status) {
         case 'canceled':
           title = 'Đơn hàng của bạn đã bị hủy';
-          content = `Đơn hàng ${order._id} của bạn đã bị hủy`;
+          content = `Đơn hàng ${order._id} của bạn đã bị hủy vì lý do ${reason}`;
           break;
         case 'accepted':
           title = 'Đơn hàng của bạn đã được chấp nhận';
@@ -89,8 +89,8 @@ export class OrderService {
         const manager = await this.accountModel.find({ role: 'manager', status: 'activated' }).exec();
         manager.forEach(async (user) => {
           const notify = await this.NotifyModel.create({
-            title: 'Có Đơn Hàng mới đang chờ',
-            content: `Bạn đã có một đơn hàng mới chờ xét duyệt`,
+            title: 'Có Đơn Hàng đã bị hủy',
+            content: `Bạn đã có một đơn hàng đã bị hủy vì lý do ${reason}`,
             send_to: user._id,
             created_by: useID,
             isRead: false
