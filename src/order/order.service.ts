@@ -25,6 +25,18 @@ export class OrderService {
     createOrderDto.customer_id = useID;
     createOrderDto.restaurant_id = restaurantID;
     createOrderDto.created_by = useID;
+    const manager = await this.accountModel.find({ role: 'manager', status: 'activated' }).exec();
+    manager.forEach(async (user) => {
+      const notify = await this.NotifyModel.create({
+        title: 'Có Đơn Hàng mới đang chờ',
+        content: `Bạn đã có một đơn hàng mới chờ xét duyệt`,
+        send_to: user._id,
+        created_by: useID,
+        isRead: false
+      });
+      console.log(notify);
+      
+    })
     return await this.orderModel.create(createOrderDto);
   }
 
@@ -66,14 +78,26 @@ export class OrderService {
           break;
       }
 
-      const notify = await this.NotifyModel.create({
+      const notify1 = await this.NotifyModel.create({
         title: title,
         content: content,
         send_to: order.customer_id,
         created_by: useID,
         isRead: false
       });
-      if (!notify) { throw new HttpException('Notify not found', 404); }
+      if (updateOrderDto.status === "canceled") {
+        const manager = await this.accountModel.find({ role: 'manager', status: 'activated' }).exec();
+        manager.forEach(async (user) => {
+          const notify = await this.NotifyModel.create({
+            title: 'Có Đơn Hàng mới đang chờ',
+            content: `Bạn đã có một đơn hàng mới chờ xét duyệt`,
+            send_to: user._id,
+            created_by: useID,
+            isRead: false
+          });
+        })
+      }
+
     } catch (error) {
       console.log(error);
       throw new HttpException(error, 500);
