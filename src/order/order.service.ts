@@ -62,7 +62,7 @@ export class OrderService {
       switch (updateOrderDto.status) {
         case 'canceled':
           title = 'Đơn hàng của bạn đã bị hủy';
-          content = `Đơn hàng ${order._id} của bạn đã bị hủy vì lý do ${reason}`;
+          content = `Đơn hàng ${order._id} của bạn đã bị hủy. ${reason}`;
           break;
         case 'accepted':
           title = 'Đơn hàng của bạn đã được chấp nhận';
@@ -90,7 +90,7 @@ export class OrderService {
         manager.forEach(async (user) => {
           const notify = await this.NotifyModel.create({
             title: 'Có Đơn Hàng đã bị hủy',
-            content: `Bạn đã có một đơn hàng đã bị hủy vì lý do ${reason}`,
+            content: `Bạn đã có một đơn hàng đã bị hủy. ${reason}`,
             send_to: user._id,
             created_by: useID,
             isRead: false
