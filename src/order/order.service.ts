@@ -12,16 +12,16 @@ import { Notify } from 'src/notify/entities/notify.entity';
 export class OrderService {
   constructor(
     @InjectModel('Order') private readonly orderModel: Model<Order>,
-    @InjectModel('Account') private readonly accountModel: Model<Account>, 
+    @InjectModel('Account') private readonly accountModel: Model<Account>,
     @InjectModel('Restaurant') private readonly restaurantModel: Model<Restaurant>,
     @InjectModel('Notify') private readonly NotifyModel: Model<Notify>
-  ) {}
-  async create(createOrderDto: CreateOrderDto, useID:string, restaurantID:string) {
+  ) { }
+  async create(createOrderDto: CreateOrderDto, useID: string, restaurantID: string) {
     const creator = await this.accountModel.findById(useID);
     const restaurant = await this.restaurantModel.findById(restaurantID);
-    if (!creator) {throw new HttpException('User not found', 404);}
-    if (creator.role !== 'customer') {throw new HttpException('User not authorized', 403);}
-    if (!restaurant) {throw new HttpException('Restaurant not found', 404);}
+    if (!creator) { throw new HttpException('User not found', 404); }
+    if (creator.role !== 'customer') { throw new HttpException('User not authorized', 403); }
+    if (!restaurant) { throw new HttpException('Restaurant not found', 404); }
     createOrderDto.customer_id = useID;
     createOrderDto.restaurant_id = restaurantID;
     createOrderDto.created_by = useID;
@@ -38,22 +38,45 @@ export class OrderService {
 
   async update(id: string, updateOrderDto: UpdateOrderDto, useID: string) {
     const creator = await this.accountModel.findById(useID);
-    
-    if (!creator) {throw new HttpException('User not found', 404);}
+
+    if (!creator) { throw new HttpException('User not found', 404); }
     updateOrderDto.updated_by = useID;
 
-    if (updateOrderDto.status === 'canceled') {
-      const order = await this.orderModel.findById(id);
-      if (!order) {throw new HttpException('Order not found', 404);}
+
+    const order = await this.orderModel.findById(id);
+    if (!order) { throw new HttpException('Order not found', 404); }
+    try {
+      let content = ''; let title = '';
+      switch (updateOrderDto.status) {
+        case 'canceled':
+          title = 'Đơn hàng của bạn đã bị hủy';
+          content = `Đơn hàng ${order._id} của bạn đã bị hủy`;
+          break;
+        case 'accepted':
+          title = 'Đơn hàng của bạn đã được chấp nhận';
+          content = `Đơn hàng ${order._id} của bạn đã được chấp nhận`;
+          break;
+        case 'prepares':
+          title = 'Đơn hàng của bạn đang được chuẩn bị';
+          content = `Đơn hàng ${order._id} của bạn đang được chuẩn bị`;
+          break;
+        default:
+          title = 'Đơn hàng của bạn đang được xem xét';
+          content = `Đơn hàng ${order._id} của bạn đang được xem xét`;
+          break;
+      }
 
       const notify = await this.NotifyModel.create({
-        title: 'Order canceled',
-        content: `Order ${order._id} has been canceled`,
+        title: title,
+        content: content,
         send_to: order.customer_id,
         created_by: useID,
         isRead: false
       });
-      if (!notify) {throw new HttpException('Notify not found', 404);}
+      if (!notify) { throw new HttpException('Notify not found', 404); }
+    } catch (error) {
+      console.log(error);
+      throw new HttpException(error, 500);
     }
 
     return await this.orderModel.findByIdAndUpdate(id, updateOrderDto, { new: true });
@@ -64,19 +87,19 @@ export class OrderService {
   }
 
   async findByCreatedAt(createdAt: Date) {
-    const orders= await this.orderModel.find({ createdAt: { $gte: createdAt } }).populate('customer_id').populate('restaurant_id').exec();
+    const orders = await this.orderModel.find({ createdAt: { $gte: createdAt } }).populate('customer_id').populate('restaurant_id').exec();
     const total = orders.reduce((total, order) => total + order.total_price, 0);
     const numberOfOrders = orders.length;
     const numberOfOrdersWithStatusDone = orders.filter(order => order.status === 'done').length;
     const numberOfOrdersWithStatusCanceled = orders.filter(order => order.status === 'canceled').length;
     const totalPriceOfOrdersWithStatusDone = orders.filter(order => order.status === 'done').reduce((total, order) => total + order.total_price, 0);
     const result = {
-    numberOfOrders:numberOfOrders,
-    done:numberOfOrdersWithStatusDone,
-    cancel:numberOfOrdersWithStatusCanceled,
-    totalDone:totalPriceOfOrdersWithStatusDone,
-    totalAll: total,
-    Detail:orders      
+      numberOfOrders: numberOfOrders,
+      done: numberOfOrdersWithStatusDone,
+      cancel: numberOfOrdersWithStatusCanceled,
+      totalDone: totalPriceOfOrdersWithStatusDone,
+      totalAll: total,
+      Detail: orders
     };
     return result;
   }
