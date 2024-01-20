@@ -41,36 +41,36 @@ export class OrderService {
   }
 
   async findAll() {
-    try {
-      const expiredOrders = await this.orderModel.find({ ended_at: { $lt: new Date() }, status: { $nin: ['done', 'canceled'] } }).exec();
-      expiredOrders.forEach(async (order) => {
-        const notifyExist = await this.NotifyModel.find({ send_to: order.customer_id, title: `Đơn hàng ${order._id} đã quá hạn` }).exec();
-        if (notifyExist.length === 0) {
-          const notify = await this.NotifyModel.create({
-            title: 'Đơn hàng đã quá hạn',
-            content: `Đơn hàng ${order._id} đã quá hạn`,
-            send_to: order.customer_id,
-            isRead: false
-          });
-        }
+    // try {
+    //   const expiredOrders = await this.orderModel.find({ ended_at: { $lt: new Date() }, status: { $nin: ['done', 'canceled'] } }).exec();
+    //   expiredOrders.forEach(async (order) => {
+    //     const notifyExist = await this.NotifyModel.find({ send_to: order.customer_id, title: `Đơn hàng ${order._id} đã quá ngày kết thúc` }).exec();
+    //     if (notifyExist.length === 0) {
+    //       const notify = await this.NotifyModel.create({
+    //         title: 'Đơn hàng đã quá ngày kết thúc',
+    //         content: `Đơn hàng ${order._id} đã quá ngày kết thúc`,
+    //         send_to: order.customer_id,
+    //         isRead: false
+    //       });
+    //     }
 
-        const managers = await this.accountModel.find({ role: 'manager', status: 'activated' }).exec();
-        managers.forEach(async (manager) => {
-          const notifyMExist = await this.NotifyModel.find({ send_to: manager._id, title: `Đơn hàng ${order._id} đã quá hạn` }).exec();
-          if (notifyMExist.length === 0) {
-            const managerNotify = await this.NotifyModel.create({
-              title: 'Đơn hàng đã quá hạn',
-              content: `Đơn hàng ${order._id} đã quá hạn`,
-              send_to: manager._id,
-              isRead: false
-            });
-          }
-        });
-      });
-    } catch (error) {
-      console.log(error);
+    //     const managers = await this.accountModel.find({ role: 'manager', status: 'activated' }).exec();
+    //     managers.forEach(async (manager) => {
+    //       const notifyMExist = await this.NotifyModel.find({ send_to: manager._id, title: `Đơn hàng ${order._id} đã quá ngày kết thúc` }).exec();
+    //       if (notifyMExist.length === 0) {
+    //         const managerNotify = await this.NotifyModel.create({
+    //           title: 'Đơn hàng đã quá ngày kết thúc',
+    //           content: `Đơn hàng ${order._id} đã quá ngày kết thúc`,
+    //           send_to: manager._id,
+    //           isRead: false
+    //         });
+    //       }
+    //     });
+    //   });
+    // } catch (error) {
+    //   console.log(error);
 
-    }
+    // }
     return await this.orderModel.find().populate('customer_id').populate('restaurant_id').exec();
   }
 
